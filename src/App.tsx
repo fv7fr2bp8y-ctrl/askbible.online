@@ -53,7 +53,7 @@ export default function App() {
     <div className="app">
       <header className="header">
         <h1 className="brand">Тих Стих</h1>
-        <p className="tagline">Намери точните думи</p>
+        <p className="tagline">Дневна доза поезия срещу шума на света</p>
       </header>
 
       <div className="search">
