@@ -1,0 +1,57 @@
+name: Деплой на GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Права, нужни за качване на GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Едновременно само един деплой; новите отменят старите.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Изтегляне на кода
+        uses: actions/checkout@v4
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Инсталиране на пакети
+        run: npm ci
+
+      - name: Билд
+        run: npm run build
+
+      - name: Настройка на Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Качване на артефакта
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Деплой
+        id: deployment
+        uses: actions/deploy-pages@v4
