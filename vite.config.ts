@@ -3,7 +3,13 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => {
+  // При деплой на GitHub Pages сайтът живее в подпапка с името на репото.
+  // За локална разработка (serve) ползваме корена "/".
+  const base = command === 'build' ? '/TihStih/' : '/'
+
+  return {
+  base,
   plugins: [
     react(),
     VitePWA({
@@ -17,7 +23,8 @@ export default defineConfig({
         theme_color: '#edebe5',
         background_color: '#edebe5',
         display: 'standalone',
-        start_url: '/',
+        start_url: base,
+        scope: base,
         icons: [
           {
             src: 'favicon.svg',
@@ -35,9 +42,10 @@ export default defineConfig({
       },
       workbox: {
         // Аудио файловете могат да са големи — кешираме ги при поискване.
+        // Шаблонът е base-независим (важи и за /TihStih/audio/...).
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname.startsWith('/audio/'),
+            urlPattern: ({ url }) => url.pathname.includes('/audio/'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'tihstih-audio',
@@ -49,4 +57,5 @@ export default defineConfig({
       },
     }),
   ],
+  }
 })

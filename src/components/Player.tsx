@@ -1,5 +1,6 @@
 import type { Poem } from '../types'
 import { ShareButton } from './ShareButton'
+import { assetUrl } from '../lib/asset'
 
 interface Props {
   current: Poem | null
@@ -24,7 +25,7 @@ export function Player({ current, isPlaying, progress, duration, onToggle, onSee
   return (
     <div className="player">
       {current.cover && (
-        <img className="player-cover" src={current.cover} alt="" />
+        <img className="player-cover" src={assetUrl(current.cover)} alt="" />
       )}
       <div className="player-info">
         <div className="player-title">{current.title}</div>

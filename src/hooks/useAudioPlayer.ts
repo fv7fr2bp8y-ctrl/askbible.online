@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Poem } from '../types'
+import { assetUrl } from '../lib/asset'
 
 /**
  * Управлява един <audio> елемент за цялото приложение.
@@ -54,7 +55,7 @@ export function useAudioPlayer() {
     }
 
     setCurrent(poem)
-    audio.src = poem.audio
+    audio.src = assetUrl(poem.audio)
     audio.currentTime = 0
     void audio.play().catch(() => {
       // Възпроизвеждането може да е блокирано (липсва файл и т.н.).
@@ -66,7 +67,7 @@ export function useAudioPlayer() {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: poem.title,
         artist: poem.author ?? 'Тих Стих',
-        artwork: poem.cover ? [{ src: poem.cover }] : undefined,
+        artwork: poem.cover ? [{ src: assetUrl(poem.cover) }] : undefined,
       })
     }
   }, [current])
