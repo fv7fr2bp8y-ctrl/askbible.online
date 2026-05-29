@@ -14,10 +14,11 @@ const featured = {
   id: 'izbrano',
   title: 'Избрано',
   description: 'Подбрани записи за начало.',
+  cover: '1LKe2Wmg07q2wi_r-MxkxOZgnB8t8uAMO',
   poems: [
-    { id: '1IkqyGmlq0HchAUYtQgmVwmzeRVjgEwpz', title: 'When I Die', author: 'Rumi' },
-    { id: '1_xhBSHT9Gcer6XuMA8prkajR0WIQFrJN', title: 'Lose Yourself', author: 'Rumi' },
-    { id: '1IKZmFptDe7xcA005yjtXkLcsOdR8FvLq', title: 'Fear', author: 'Kahlil Gibran' },
+    { id: '1IkqyGmlq0HchAUYtQgmVwmzeRVjgEwpz', title: 'When I Die', author: 'Rumi', cover: '1LKe2Wmg07q2wi_r-MxkxOZgnB8t8uAMO' },
+    { id: '1_xhBSHT9Gcer6XuMA8prkajR0WIQFrJN', title: 'Lose Yourself', author: 'Rumi', cover: '1LhEiIz5U29RqMKwCwAPFhULWKUG6571S' },
+    { id: '1IKZmFptDe7xcA005yjtXkLcsOdR8FvLq', title: 'Fear', author: 'Kahlil Gibran', cover: '1_x-ezDF4-ut8lBM5SuEExum9LqLWSJ4X' },
   ],
 }
 
@@ -321,15 +322,23 @@ for (const p of poets) {
 }
 
 // Сериализираме като TypeScript.
-const fmtPoem = (po) =>
-  `      { id: ${JSON.stringify(po.id)}, title: ${JSON.stringify(po.title)}, author: ${JSON.stringify(po.author)}, audio: ${JSON.stringify(driveUrl(po.id))} },`
+const fmtPoem = (po) => {
+  const f = [
+    `id: ${JSON.stringify(po.id)}`,
+    `title: ${JSON.stringify(po.title)}`,
+    `author: ${JSON.stringify(po.author)}`,
+    `audio: ${JSON.stringify(driveUrl(po.id))}`,
+  ]
+  if (po.cover) f.push(`cover: ${JSON.stringify(driveUrl(po.cover))}`)
+  return `      { ${f.join(', ')} },`
+}
 
 const body = albums
   .map(
     (a) => `  {
     id: ${JSON.stringify(a.id)},
     title: ${JSON.stringify(a.title)},
-    description: ${JSON.stringify(a.description)},
+    description: ${JSON.stringify(a.description)},${a.cover ? `\n    cover: ${JSON.stringify(driveUrl(a.cover))},` : ''}
     poems: [
 ${a.poems.map(fmtPoem).join('\n')}
     ],

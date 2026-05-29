@@ -3,7 +3,9 @@ import { albums } from './data/poems'
 import { useAudioPlayer } from './hooks/useAudioPlayer'
 import { Player } from './components/Player'
 import { ShareButton } from './components/ShareButton'
-import type { Poem } from './types'
+import { assetUrl } from './lib/asset'
+import { poetTheme, initials } from './lib/theme'
+import type { Album, Poem } from './types'
 
 interface PoemEntry {
   poem: Poem
@@ -49,6 +51,8 @@ export default function App() {
     )
   })
 
+  const activeAlbum = category === 'all' ? null : albums.find((a) => a.id === category) ?? null
+
   return (
     <div className="app">
       <header className="header">
@@ -85,6 +89,8 @@ export default function App() {
         ))}
       </nav>
 
+      {!q && <Hero album={activeAlbum} total={entries.length} />}
+
       <main className="library">
         {filtered.length === 0 ? (
           <p className="empty">Няма намерени стихове.</p>
@@ -114,6 +120,30 @@ export default function App() {
   )
 }
 
+/** Голям банер с корица/градиент за текущата селекция. */
+function Hero({ album, total }: { album: Album | null; total: number }) {
+  const title = album ? album.title : 'Цялата колекция'
+  const desc = album?.description ?? 'Стихове, четени на глас — за тихите минути от деня.'
+  const count = album ? album.poems.length : total
+  const th = poetTheme(album ? album.title : 'Тих Стих')
+
+  const style = album?.cover
+    ? { backgroundImage: `url(${assetUrl(album.cover)})` }
+    : album
+      ? { background: `linear-gradient(135deg, ${th.c1}, ${th.c2})` }
+      : { background: 'linear-gradient(135deg, #8fa47f 0%, #a98a6b 55%, #c0805f 100%)' }
+
+  return (
+    <section className={`hero${album?.cover ? ' has-image' : ''}`} style={style}>
+      <div className="hero-body">
+        <span className="hero-kicker">{count} записа</span>
+        <h2 className="hero-title">{title}</h2>
+        <p className="hero-desc">{desc}</p>
+      </div>
+    </section>
+  )
+}
+
 interface CardProps {
   poem: Poem
   category: string
@@ -137,9 +167,25 @@ function PoemCard({ poem, category, isCurrent, isPlaying, onPlay }: CardProps) {
     ? `${poem.title}${poem.author ? ' — ' + poem.author : ''}`
     : poem.author ?? category
   const length = lengthLabel(poem.duration)
+  const th = poetTheme(poem.author ?? category)
+  const playing = isCurrent && isPlaying
 
   return (
     <article className={`card${isCurrent ? ' is-current' : ''}`}>
+      <button
+        className={`card-thumb${poem.cover ? ' has-image' : ''}`}
+        onClick={onPlay}
+        aria-label={playing ? 'Пауза' : `Пусни „${poem.title}“`}
+        style={
+          poem.cover
+            ? { backgroundImage: `url(${assetUrl(poem.cover)})` }
+            : { background: `linear-gradient(135deg, ${th.c1}, ${th.c2})` }
+        }
+      >
+        {!poem.cover && <span className="card-mono">{initials(poem.author ?? category)}</span>}
+        <span className="card-thumb-play">{playing ? '❚❚' : '▶'}</span>
+      </button>
+
       <button className="card-main" onClick={onPlay} aria-label={`Пусни „${poem.title}“`}>
         <p className="card-quote">„{quote}“</p>
         <p className="card-meta">{meta}</p>
@@ -152,14 +198,8 @@ function PoemCard({ poem, category, isCurrent, isPlaying, onPlay }: CardProps) {
           {length && <span className="card-length">{length}</span>}
         </div>
       </button>
+
       <div className="card-side">
-        <button
-          className="play-circle"
-          onClick={onPlay}
-          aria-label={isCurrent && isPlaying ? 'Пауза' : 'Пусни'}
-        >
-          {isCurrent && isPlaying ? '❚❚' : '▶'}
-        </button>
         <ShareButton poem={poem} />
       </div>
     </article>

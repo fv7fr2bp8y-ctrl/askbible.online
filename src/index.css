@@ -140,16 +140,116 @@ body {
   padding: 2rem 0;
 }
 
+/* Hero */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  margin: 0.9rem 0 0.2rem;
+  min-height: 140px;
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--shadow);
+  color: #fff;
+}
+
+.hero.has-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.hero-body {
+  position: relative;
+  z-index: 1;
+  padding: 1.2rem 1.3rem;
+}
+
+.hero-kicker {
+  display: inline-block;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.92;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+
+.hero-title {
+  font-family: var(--serif-font);
+  font-size: 1.7rem;
+  margin: 0.5rem 0 0.2rem;
+  font-weight: 700;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+}
+
+.hero-desc {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.95;
+  max-width: 42ch;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+}
+
 /* Poem card */
 .card {
   display: flex;
-  align-items: stretch;
-  gap: 0.6rem;
+  align-items: center;
+  gap: 0.85rem;
   background: var(--surface);
   border-radius: 18px;
   box-shadow: var(--shadow);
-  padding: 1.1rem 1.1rem 0.9rem;
+  padding: 0.9rem 1rem;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Корица-миниатюра с play overlay */
+.card-thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card-mono {
+  font-family: var(--serif-font);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.02em;
+}
+
+.card-thumb-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.card-thumb:hover .card-thumb-play,
+.card.is-current .card-thumb-play {
+  opacity: 1;
 }
 
 .card.is-current {
@@ -215,7 +315,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex: 0 0 auto;
 }
 
