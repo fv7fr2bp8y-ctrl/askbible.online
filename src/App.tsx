@@ -53,6 +53,18 @@ export default function App() {
 
   const activeAlbum = category === 'all' ? null : albums.find((a) => a.id === category) ?? null
 
+  // Стих на деня — детерминиран избор по деня от годината, за да е един и същ
+  // през целия ден, но различен всеки ден. Предпочита албума „Избрано“.
+  const daily = useMemo<PoemEntry | null>(() => {
+    const featured = entries.filter((e) => e.categoryId === albums[0]?.id)
+    const pool = featured.length > 0 ? featured : entries
+    if (pool.length === 0) return null
+    const now = new Date()
+    const start = new Date(now.getFullYear(), 0, 0)
+    const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86_400_000)
+    return pool[dayOfYear % pool.length]
+  }, [entries])
+
   return (
     <div className="app">
       <header className="header">
@@ -89,7 +101,17 @@ export default function App() {
         ))}
       </nav>
 
-      {!q && <Hero album={activeAlbum} total={entries.length} />}
+      {!q && category === 'all' && daily && (
+        <DailyPoem
+          poem={daily.poem}
+          category={daily.categoryTitle}
+          isCurrent={player.current?.id === daily.poem.id}
+          isPlaying={player.isPlaying}
+          onPlay={() => player.play(daily.poem)}
+        />
+      )}
+
+      {!q && activeAlbum && <Hero album={activeAlbum} total={entries.length} />}
 
       <main className="library">
         {filtered.length === 0 ? (
@@ -150,6 +172,37 @@ interface CardProps {
   isCurrent: boolean
   isPlaying: boolean
   onPlay: () => void
+}
+
+/** Голяма карта „Стих на деня“ с корица/градиент и директно пускане. */
+function DailyPoem({ poem, category, isCurrent, isPlaying, onPlay }: CardProps) {
+  const th = poetTheme(poem.author ?? category)
+  const playing = isCurrent && isPlaying
+  const firstLine = poem.text?.split('\n').find((l) => l.trim()) ?? ''
+
+  const style = poem.cover
+    ? { backgroundImage: `url(${assetUrl(poem.cover)})` }
+    : { background: `linear-gradient(135deg, ${th.c1}, ${th.c2})` }
+
+  return (
+    <button
+      className={`daily${poem.cover ? ' has-image' : ''}${isCurrent ? ' is-current' : ''}`}
+      style={style}
+      onClick={onPlay}
+      aria-label={playing ? `Пауза — „${poem.title}“` : `Пусни „${poem.title}“`}
+    >
+      {!poem.cover && <span className="daily-mono">{initials(poem.author ?? category)}</span>}
+      <div className="daily-body">
+        <span className="daily-kicker">Стих на деня</span>
+        <h2 className="daily-title">{poem.title}</h2>
+        {poem.author && <p className="daily-author">{poem.author}</p>}
+        {firstLine && <p className="daily-quote">„{firstLine}“</p>}
+      </div>
+      <span className="daily-play" aria-hidden>
+        {playing ? '❚❚' : '▶'}
+      </span>
+    </button>
+  )
 }
 
 function lengthLabel(duration?: number): string | null {
