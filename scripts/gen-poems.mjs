@@ -4,6 +4,14 @@
 // Аудиото се стриймва директно от Google Drive (файловете са публични).
 // Редът: водещите ("Избрано") са първи, после поетите; стиховете — по номер.
 import { writeFileSync } from 'node:fs'
+import { existsSync } from 'node:fs'
+
+// Корица на поет: предпочита истински портрет covers/<id>.png (генериран от
+// gen-ai-covers.mjs), иначе ползва SVG постера covers/<id>.svg.
+const poetCover = (id) =>
+  existsSync(new URL(`../public/covers/${id}.png`, import.meta.url))
+    ? `covers/${id}.png`
+    : `covers/${id}.svg`
 
 // Схема "gdrive:<id>" — преобразува се към Drive API линка (с ключа)
 // на едно място, в src/lib/asset.ts.
@@ -321,12 +329,12 @@ for (const p of poets) {
   const poems = parseLines(p.lines)
     .sort((a, b) => a.track - b.track)
     .map(({ id, title }) => ({ id, title, author: p.author }))
-  // Корица-постер, генерирана от scripts/gen-covers.mjs.
+  // Истински портрет (.png) ако има, иначе SVG постер — виж poetCover().
   albums.push({
     id: p.id,
     title: p.title,
     description: p.description,
-    cover: `covers/${p.id}.svg`,
+    cover: poetCover(p.id),
     poems,
   })
 }
