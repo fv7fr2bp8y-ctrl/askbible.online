@@ -3,8 +3,7 @@
 //
 // Аудиото се стриймва директно от Google Drive (файловете са публични).
 // Редът: водещите ("Избрано") са първи, после поетите; стиховете — по номер.
-import { writeFileSync } from 'node:fs'
-import { existsSync } from 'node:fs'
+import { writeFileSync, existsSync } from 'node:fs'
 
 // Корица на поет: предпочита истински портрет covers/<id>.png (генериран от
 // gen-ai-covers.mjs), иначе ползва SVG постера covers/<id>.svg.
