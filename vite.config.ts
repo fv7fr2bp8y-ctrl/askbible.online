@@ -3,10 +3,9 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => {
-  // При деплой на GitHub Pages сайтът живее в подпапка с името на репото.
-  // За локална разработка (serve) ползваме корена "/".
-  const base = command === 'build' ? '/TihStih/' : '/'
+export default defineConfig(() => {
+  // Хоства се на собствен домейн tihstih.eu (GitHub Pages), от корена → base "/".
+  const base = '/'
 
   return {
   base,
