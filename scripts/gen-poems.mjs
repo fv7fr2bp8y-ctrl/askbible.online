@@ -9,6 +9,9 @@ import { writeFileSync } from 'node:fs'
 // на едно място, в src/lib/asset.ts.
 const driveUrl = (id) => `gdrive:${id}`
 
+// Корица: локален път (съдържа "/") се ползва както е; иначе е Drive id.
+const coverUrl = (v) => (v.includes('/') || v.includes(':') ? v : `gdrive:${v}`)
+
 // Водещи записи (папка "Използвай тези стихове") — със собствени заглавия.
 const featured = {
   id: 'izbrano',
@@ -318,7 +321,14 @@ for (const p of poets) {
   const poems = parseLines(p.lines)
     .sort((a, b) => a.track - b.track)
     .map(({ id, title }) => ({ id, title, author: p.author }))
-  albums.push({ id: p.id, title: p.title, description: p.description, poems })
+  // Корица-постер, генерирана от scripts/gen-covers.mjs.
+  albums.push({
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    cover: `covers/${p.id}.svg`,
+    poems,
+  })
 }
 
 // Сериализираме като TypeScript.
@@ -329,7 +339,7 @@ const fmtPoem = (po) => {
     `author: ${JSON.stringify(po.author)}`,
     `audio: ${JSON.stringify(driveUrl(po.id))}`,
   ]
-  if (po.cover) f.push(`cover: ${JSON.stringify(driveUrl(po.cover))}`)
+  if (po.cover) f.push(`cover: ${JSON.stringify(coverUrl(po.cover))}`)
   return `      { ${f.join(', ')} },`
 }
 
@@ -338,7 +348,7 @@ const body = albums
     (a) => `  {
     id: ${JSON.stringify(a.id)},
     title: ${JSON.stringify(a.title)},
-    description: ${JSON.stringify(a.description)},${a.cover ? `\n    cover: ${JSON.stringify(driveUrl(a.cover))},` : ''}
+    description: ${JSON.stringify(a.description)},${a.cover ? `\n    cover: ${JSON.stringify(coverUrl(a.cover))},` : ''}
     poems: [
 ${a.poems.map(fmtPoem).join('\n')}
     ],
