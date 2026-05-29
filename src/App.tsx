@@ -3,53 +3,102 @@ import { albums } from './data/poems'
 import { useAudioPlayer } from './hooks/useAudioPlayer'
 import { Player } from './components/Player'
 import { ShareButton } from './components/ShareButton'
-import type { Album, Poem } from './types'
+import type { Poem } from './types'
+
+interface PoemEntry {
+  poem: Poem
+  categoryId: string
+  categoryTitle: string
+}
 
 export default function App() {
   const player = useAudioPlayer()
-  const [openAlbumId, setOpenAlbumId] = useState<string | null>(
-    albums.length === 1 ? albums[0].id : null,
-  )
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState<string>('all')
 
-  const allPoems = useMemo<Poem[]>(
-    () => albums.flatMap((a) => a.poems),
+  // Плосък списък от всички стихове, всеки с категорията си (албума).
+  const entries = useMemo<PoemEntry[]>(
+    () =>
+      albums.flatMap((a) =>
+        a.poems.map((poem) => ({
+          poem,
+          categoryId: a.id,
+          categoryTitle: a.title,
+        })),
+      ),
     [],
   )
 
   // Споделен линк: /?stih=<id> — пуска директно съответния стих.
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const id = params.get('stih')
+    const id = new URLSearchParams(window.location.search).get('stih')
     if (!id) return
-    const poem = allPoems.find((p) => p.id === id)
-    if (poem) {
-      const album = albums.find((a) => a.poems.some((p) => p.id === id))
-      if (album) setOpenAlbumId(album.id)
-      player.play(poem)
-    }
+    const match = entries.find((e) => e.poem.id === id)
+    if (match) player.play(match.poem)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const openAlbum = albums.find((a) => a.id === openAlbumId) ?? null
+  const q = query.trim().toLowerCase()
+  const filtered = entries.filter((e) => {
+    if (category !== 'all' && e.categoryId !== category) return false
+    if (!q) return true
+    return (
+      e.poem.title.toLowerCase().includes(q) ||
+      (e.poem.author ?? '').toLowerCase().includes(q) ||
+      (e.poem.text ?? '').toLowerCase().includes(q)
+    )
+  })
 
   return (
     <div className="app">
       <header className="header">
-        <h1 className="brand">Тих&nbsp;Стих</h1>
-        <p className="tagline">Записани стихове — слушай, чети и споделяй.</p>
+        <h1 className="brand">Тих Стих</h1>
+        <p className="tagline">Намери точните думи</p>
       </header>
 
-      <main className="content">
-        {openAlbum ? (
-          <AlbumView
-            album={openAlbum}
-            currentId={player.current?.id ?? null}
-            isPlaying={player.isPlaying}
-            onBack={albums.length > 1 ? () => setOpenAlbumId(null) : undefined}
-            onPlay={player.play}
-          />
+      <div className="search">
+        <span className="search-icon" aria-hidden>⌕</span>
+        <input
+          type="search"
+          placeholder="Какво искаш да чуеш днес?"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label="Търсене"
+        />
+      </div>
+
+      <nav className="chips" aria-label="Категории">
+        <button
+          className={`chip${category === 'all' ? ' is-active' : ''}`}
+          onClick={() => setCategory('all')}
+        >
+          Всички
+        </button>
+        {albums.map((a) => (
+          <button
+            key={a.id}
+            className={`chip${category === a.id ? ' is-active' : ''}`}
+            onClick={() => setCategory(a.id)}
+          >
+            {a.title}
+          </button>
+        ))}
+      </nav>
+
+      <main className="library">
+        {filtered.length === 0 ? (
+          <p className="empty">Няма намерени стихове.</p>
         ) : (
-          <AlbumGrid albums={albums} onOpen={setOpenAlbumId} />
+          filtered.map(({ poem, categoryTitle }) => (
+            <PoemCard
+              key={poem.id}
+              poem={poem}
+              category={categoryTitle}
+              isCurrent={player.current?.id === poem.id}
+              isPlaying={player.isPlaying}
+              onPlay={() => player.play(poem)}
+            />
+          ))
         )}
       </main>
 
@@ -65,74 +114,54 @@ export default function App() {
   )
 }
 
-function AlbumGrid({ albums, onOpen }: { albums: Album[]; onOpen: (id: string) => void }) {
-  return (
-    <section className="album-grid">
-      <h2 className="section-title">Албуми</h2>
-      <div className="grid">
-        {albums.map((album) => (
-          <button key={album.id} className="album-card" onClick={() => onOpen(album.id)}>
-            {album.cover && <img className="album-card-cover" src={album.cover} alt="" />}
-            <div className="album-card-title">{album.title}</div>
-            {album.description && (
-              <div className="album-card-desc">{album.description}</div>
-            )}
-            <div className="album-card-count">{album.poems.length} стиха</div>
-          </button>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-interface AlbumViewProps {
-  album: Album
-  currentId: string | null
+interface CardProps {
+  poem: Poem
+  category: string
+  isCurrent: boolean
   isPlaying: boolean
-  onBack?: () => void
-  onPlay: (poem: Poem) => void
+  onPlay: () => void
 }
 
-function AlbumView({ album, currentId, isPlaying, onBack, onPlay }: AlbumViewProps) {
-  const playing = album.poems.find((p) => p.id === currentId) ?? null
+function lengthLabel(duration?: number): string | null {
+  if (!duration) return null
+  if (duration < 90) return 'Кратко'
+  if (duration < 180) return 'Средно'
+  return 'Дълго'
+}
+
+function PoemCard({ poem, category, isCurrent, isPlaying, onPlay }: CardProps) {
+  // Цитат = първият ред от текста; ако няма — заглавието.
+  const firstLine = poem.text?.split('\n').find((l) => l.trim()) ?? ''
+  const quote = firstLine || poem.title
+  const meta = firstLine
+    ? `${poem.title}${poem.author ? ' — ' + poem.author : ''}`
+    : poem.author ?? category
+  const length = lengthLabel(poem.duration)
 
   return (
-    <section className="album-view">
-      {onBack && (
-        <button className="back-btn" onClick={onBack}>
-          ← Албуми
+    <article className={`card${isCurrent ? ' is-current' : ''}`}>
+      <button className="card-main" onClick={onPlay} aria-label={`Пусни „${poem.title}“`}>
+        <p className="card-quote">„{quote}“</p>
+        <p className="card-meta">{meta}</p>
+        <div className="card-footer">
+          <div className="tags">
+            {(poem.tags ?? []).map((t) => (
+              <span key={t} className="tag">{t}</span>
+            ))}
+          </div>
+          {length && <span className="card-length">{length}</span>}
+        </div>
+      </button>
+      <div className="card-side">
+        <button
+          className="play-circle"
+          onClick={onPlay}
+          aria-label={isCurrent && isPlaying ? 'Пауза' : 'Пусни'}
+        >
+          {isCurrent && isPlaying ? '❚❚' : '▶'}
         </button>
-      )}
-      <h2 className="section-title">{album.title}</h2>
-      {album.description && <p className="album-desc">{album.description}</p>}
-
-      <ul className="poem-list">
-        {album.poems.map((poem) => {
-          const isCurrent = poem.id === currentId
-          return (
-            <li key={poem.id} className={`poem-item${isCurrent ? ' is-current' : ''}`}>
-              <button className="poem-play" onClick={() => onPlay(poem)} aria-label="Пусни">
-                {isCurrent && isPlaying ? '⏸' : '▶'}
-              </button>
-              {poem.cover && <img className="poem-cover" src={poem.cover} alt="" />}
-              <div className="poem-meta">
-                <div className="poem-title">{poem.title}</div>
-                {poem.author && <div className="poem-author">{poem.author}</div>}
-              </div>
-              <ShareButton poem={poem} />
-            </li>
-          )
-        })}
-      </ul>
-
-      {playing?.text && (
-        <article className="poem-text">
-          <h3>{playing.title}</h3>
-          {playing.text.split('\n').map((line, i) => (
-            <p key={i}>{line || ' '}</p>
-          ))}
-        </article>
-      )}
-    </section>
+        <ShareButton poem={poem} />
+      </div>
+    </article>
   )
 }

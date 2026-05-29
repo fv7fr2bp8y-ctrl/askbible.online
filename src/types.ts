@@ -13,6 +13,8 @@ export interface Poem {
   text?: string
   /** Продължителност в секунди (по желание, само за показване). */
   duration?: number
+  /** Етикети/настроения (по желание), напр. ["Искрено", "Дълбоко"]. */
+  tags?: string[]
 }
 
 export interface Album {

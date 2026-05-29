@@ -8,22 +8,55 @@ import type { Album } from '../types'
  * 2. Сложи обложката в `public/covers/`   (напр. public/covers/dom.jpg)
  * 3. Добави запис тук с пътищата (започващи с / — без "public").
  *
+ * Албумите играят роля и на категории (чиповете в библиотеката).
  * Примерните записи по-долу са заместители — замени ги със своите.
  */
 export const albums: Album[] = [
   {
-    id: 'nachalo',
-    title: 'Начало',
-    description: 'Първите записани стихове.',
-    cover: '/covers/placeholder.svg',
+    id: 'liubov',
+    title: 'Любов',
+    description: 'Стихове за обичта.',
     poems: [
       {
         id: 'tih-stih',
         title: 'Тих стих',
         author: 'Неизвестен',
         audio: '/audio/example.mp3',
-        cover: '/covers/placeholder.svg',
         text: 'Тук ще се покаже текстът на стиха,\nкогато го добавиш в данните.',
+        tags: ['Искрено', 'Дълбоко'],
+        duration: 95,
+      },
+    ],
+  },
+  {
+    id: 'priiatelstvo',
+    title: 'Приятелство',
+    description: 'За хората до нас.',
+    poems: [
+      {
+        id: 'priiatel',
+        title: 'Приятел',
+        author: 'Неизвестен',
+        audio: '/audio/example.mp3',
+        text: 'Примерен стих за приятелството —\nзамени го със свой запис.',
+        tags: ['Топло', 'Класика'],
+        duration: 120,
+      },
+    ],
+  },
+  {
+    id: 'blagodarnost',
+    title: 'Благодарност',
+    description: 'Думи на признателност.',
+    poems: [
+      {
+        id: 'blagodarya',
+        title: 'Благодаря',
+        author: 'Неизвестен',
+        audio: '/audio/example.mp3',
+        text: 'Примерен стих за благодарността —\nзамени го със свой запис.',
+        tags: ['Нежно'],
+        duration: 80,
       },
     ],
   },

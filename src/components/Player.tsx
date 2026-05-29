@@ -44,7 +44,7 @@ export function Player({ current, isPlaying, progress, duration, onToggle, onSee
         </div>
       </div>
       <button className="player-toggle" onClick={onToggle} aria-label={isPlaying ? 'Пауза' : 'Пусни'}>
-        {isPlaying ? '⏸' : '▶'}
+        {isPlaying ? '❚❚' : '▶'}
       </button>
       <ShareButton poem={current} />
     </div>
