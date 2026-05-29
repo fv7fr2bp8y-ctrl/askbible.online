@@ -5,7 +5,9 @@
 // Редът: водещите ("Избрано") са първи, после поетите; стиховете — по номер.
 import { writeFileSync } from 'node:fs'
 
-const driveUrl = (id) => `https://drive.google.com/uc?export=download&id=${id}`
+// Схема "gdrive:<id>" — преобразува се към Drive API линка (с ключа)
+// на едно място, в src/lib/asset.ts.
+const driveUrl = (id) => `gdrive:${id}`
 
 // Водещи записи (папка "Използвай тези стихове") — със собствени заглавия.
 const featured = {
