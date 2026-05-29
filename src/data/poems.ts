@@ -14,10 +14,11 @@ export const albums: Album[] = [
     id: "izbrano",
     title: "Избрано",
     description: "Подбрани записи за начало.",
+    cover: "gdrive:1LKe2Wmg07q2wi_r-MxkxOZgnB8t8uAMO",
     poems: [
-      { id: "1IkqyGmlq0HchAUYtQgmVwmzeRVjgEwpz", title: "When I Die", author: "Rumi", audio: "gdrive:1IkqyGmlq0HchAUYtQgmVwmzeRVjgEwpz" },
-      { id: "1_xhBSHT9Gcer6XuMA8prkajR0WIQFrJN", title: "Lose Yourself", author: "Rumi", audio: "gdrive:1_xhBSHT9Gcer6XuMA8prkajR0WIQFrJN" },
-      { id: "1IKZmFptDe7xcA005yjtXkLcsOdR8FvLq", title: "Fear", author: "Kahlil Gibran", audio: "gdrive:1IKZmFptDe7xcA005yjtXkLcsOdR8FvLq" },
+      { id: "1IkqyGmlq0HchAUYtQgmVwmzeRVjgEwpz", title: "When I Die", author: "Rumi", audio: "gdrive:1IkqyGmlq0HchAUYtQgmVwmzeRVjgEwpz", cover: "gdrive:1LKe2Wmg07q2wi_r-MxkxOZgnB8t8uAMO" },
+      { id: "1_xhBSHT9Gcer6XuMA8prkajR0WIQFrJN", title: "Lose Yourself", author: "Rumi", audio: "gdrive:1_xhBSHT9Gcer6XuMA8prkajR0WIQFrJN", cover: "gdrive:1LhEiIz5U29RqMKwCwAPFhULWKUG6571S" },
+      { id: "1IKZmFptDe7xcA005yjtXkLcsOdR8FvLq", title: "Fear", author: "Kahlil Gibran", audio: "gdrive:1IKZmFptDe7xcA005yjtXkLcsOdR8FvLq", cover: "gdrive:1_x-ezDF4-ut8lBM5SuEExum9LqLWSJ4X" },
     ],
   },
   {
