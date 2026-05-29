@@ -14,8 +14,8 @@ export default defineConfig({
         short_name: 'Тих Стих',
         description: 'Записани стихове — слушай, чети и споделяй.',
         lang: 'bg',
-        theme_color: '#1a1a2e',
-        background_color: '#1a1a2e',
+        theme_color: '#edebe5',
+        background_color: '#edebe5',
         display: 'standalone',
         start_url: '/',
         icons: [
