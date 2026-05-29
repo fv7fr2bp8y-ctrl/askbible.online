@@ -2,6 +2,9 @@
 <html lang="bg">
   <head>
     <meta charset="UTF-8" />
+    <!-- Винаги изпращай origin-а като referer, за да минават заявките към
+         Google Drive API през ограничението по HTTP referrer на ключа. -->
+    <meta name="referrer" content="origin" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#edebe5" />
