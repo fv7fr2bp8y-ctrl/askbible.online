@@ -140,63 +140,7 @@ body {
   padding: 2rem 0;
 }
 
-/* Hero */
-.hero {
-  position: relative;
-  overflow: hidden;
-  border-radius: 20px;
-  margin: 0.9rem 0 0.2rem;
-  min-height: 140px;
-  display: flex;
-  align-items: flex-end;
-  background-size: cover;
-  background-position: center;
-  box-shadow: var(--shadow);
-  color: #fff;
-}
-
-.hero.has-image::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.55) 100%);
-}
-
-.hero-body {
-  position: relative;
-  z-index: 1;
-  padding: 1.2rem 1.3rem;
-}
-
-.hero-kicker {
-  display: inline-block;
-  font-size: 0.74rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0.92;
-  background: rgba(255, 255, 255, 0.18);
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  backdrop-filter: blur(4px);
-}
-
-.hero-title {
-  font-family: var(--serif-font);
-  font-size: 1.7rem;
-  margin: 0.5rem 0 0.2rem;
-  font-weight: 700;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
-}
-
-.hero-desc {
-  margin: 0;
-  font-size: 0.95rem;
-  opacity: 0.95;
-  max-width: 42ch;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
-}
-
-/* Стих на деня — голяма карта с директно пускане */
+/* Водещо стихотворение — голяма карта с директно пускане */
 .daily {
   position: relative;
   display: block;
