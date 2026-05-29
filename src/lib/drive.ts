@@ -13,7 +13,8 @@
  * Може да се подаде и при билд чрез VITE_DRIVE_API_KEY.
  */
 export const DRIVE_API_KEY: string =
-  (import.meta.env.VITE_DRIVE_API_KEY as string | undefined) ?? ''
+  (import.meta.env.VITE_DRIVE_API_KEY as string | undefined) ??
+  'AIzaSyD837Xsi3__ncRI0ZArFHl0F5Yq3M_KvGA'
 
 /** Преобразува "gdrive:<id>" към пълен Drive API media URL. */
 export function driveMediaUrl(id: string): string {
