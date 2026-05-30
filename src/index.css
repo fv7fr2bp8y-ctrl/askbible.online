@@ -196,10 +196,10 @@ body {
 .daily-body {
   position: relative;
   z-index: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 178px;
 }
 
 .daily-kicker {
