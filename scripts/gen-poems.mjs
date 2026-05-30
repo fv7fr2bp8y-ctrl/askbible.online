@@ -338,15 +338,16 @@ function parseLines(text) {
 const albums = []
 albums.push(featured)
 for (const p of poets) {
+  const cover = poetCover(p.id)
   const poems = parseLines(p.lines)
     .sort((a, b) => a.track - b.track)
-    .map(({ id, title }) => ({ id, title, author: p.author }))
-  // Истински портрет (.png) ако има, иначе SVG постер — виж poetCover().
+    // Всеки стих ползва портрета на поета и за миниатюрата си.
+    .map(({ id, title }) => ({ id, title, author: p.author, cover }))
   albums.push({
     id: p.id,
     title: p.title,
     description: p.description,
-    cover: poetCover(p.id),
+    cover,
     poems,
   })
 }
