@@ -153,11 +153,11 @@ body {
   overflow: hidden;
   border-radius: 22px;
   margin: 0.9rem 0 0.2rem;
-  /* Квадратна карта: квадратният портрет се събира цял, без кропване. */
-  aspect-ratio: 1 / 1;
+  min-height: 210px;
   padding: 1.4rem 1.5rem;
   background-size: cover;
-  background-position: center top;
+  /* Портретите са по-високи от картата — показваме горната част (лицето). */
+  background-position: center 22%;
   box-shadow: var(--shadow);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -288,7 +288,7 @@ body {
   padding: 0;
   cursor: pointer;
   background-size: cover;
-  background-position: center;
+  background-position: center 22%;
   display: flex;
   align-items: center;
   justify-content: center;
