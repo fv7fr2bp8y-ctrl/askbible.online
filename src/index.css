@@ -155,7 +155,7 @@ body {
   margin: 0.9rem 0 0.2rem;
   /* Квадратна карта: квадратният портрет се събира цял, без кропване. */
   aspect-ratio: 1 / 1;
-  padding: 1.4rem 1.5rem;
+  padding: 1.4rem 1.5rem 2rem;
   background-size: cover;
   background-position: center top;
   box-shadow: var(--shadow);
