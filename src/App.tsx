@@ -16,7 +16,8 @@ interface PoemEntry {
 export default function App() {
   const player = useAudioPlayer()
   const [query, setQuery] = useState('')
-  const [category, setCategory] = useState<string>('all')
+  // Стартираме в секция „Избрано“ (първият албум), не в „Всички“.
+  const [category, setCategory] = useState<string>(albums[0]?.id ?? 'all')
 
   // Плосък списък от всички стихове, всеки с категорията си (албума).
   const entries = useMemo<PoemEntry[]>(
