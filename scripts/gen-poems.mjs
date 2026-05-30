@@ -3,7 +3,27 @@
 //
 // Аудиото се стриймва директно от Google Drive (файловете са публични).
 // Редът: водещите ("Избрано") са първи, после поетите; стиховете — по номер.
-import { writeFileSync } from 'node:fs'
+import { writeFileSync, existsSync } from 'node:fs'
+
+// Истински портрети на поетите в Google Drive (Images/<Поет>/). Имат
+// предимство пред локалните корици.
+const poetPhoto = {
+  vazov: '1e_vbzma_bsQ992VELCkVQdoJ16gK4b6A',
+  yavorov: '1WA1zbc3_zRj5s81GC7LXKZs0wgu_C2wl',
+  smirnenski: '1O-jcvAhVerQCaMgFGF8Gf2RffCL_gSXq',
+  vaptsarov: '1yvMzAXTBrAXcCdzbweLAvhMmuq8TsfXN',
+  bashev: '1gmLmBQbO7HOY0WIqxOWws3K3VM5QTwk5',
+  damyanov: '13KOjC4Jxuynqt_Yu6h9ZkkoyPZ1AlnDB',
+  germanov: '1pMc-4lIQaQMCUx2zaLBGP5fyHv9A0KGQ',
+}
+
+// Корица на поет: Drive портрет → локален .png → SVG постер.
+const poetCover = (id) =>
+  poetPhoto[id]
+    ? `gdrive:${poetPhoto[id]}`
+    : existsSync(new URL(`../public/covers/${id}.png`, import.meta.url))
+      ? `covers/${id}.png`
+      : `covers/${id}.svg`
 
 // Схема "gdrive:<id>" — преобразува се към Drive API линка (с ключа)
 // на едно място, в src/lib/asset.ts.
@@ -321,12 +341,12 @@ for (const p of poets) {
   const poems = parseLines(p.lines)
     .sort((a, b) => a.track - b.track)
     .map(({ id, title }) => ({ id, title, author: p.author }))
-  // Корица-постер, генерирана от scripts/gen-covers.mjs.
+  // Истински портрет (.png) ако има, иначе SVG постер — виж poetCover().
   albums.push({
     id: p.id,
     title: p.title,
     description: p.description,
-    cover: `covers/${p.id}.svg`,
+    cover: poetCover(p.id),
     poems,
   })
 }

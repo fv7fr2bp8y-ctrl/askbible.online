@@ -25,7 +25,7 @@ export const albums: Album[] = [
     id: "vazov",
     title: "Иван Вазов",
     description: "Патриархът на българската литература.",
-    cover: "covers/vazov.svg",
+    cover: "gdrive:1e_vbzma_bsQ992VELCkVQdoJ16gK4b6A",
     poems: [
       { id: "19Lbe5gnhG5RhexWyFRkFCscKNvDpvdr6", title: "Левски", author: "Иван Вазов", audio: "gdrive:19Lbe5gnhG5RhexWyFRkFCscKNvDpvdr6" },
       { id: "1qiXl3ek_mT71AbIqmhxhiI8af8q_cq1W", title: "Бенковски", author: "Иван Вазов", audio: "gdrive:1qiXl3ek_mT71AbIqmhxhiI8af8q_cq1W" },
@@ -49,7 +49,7 @@ export const albums: Album[] = [
     id: "yavorov",
     title: "Пейо Яворов",
     description: "Символизъм, любов и революция.",
-    cover: "covers/yavorov.svg",
+    cover: "gdrive:1WA1zbc3_zRj5s81GC7LXKZs0wgu_C2wl",
     poems: [
       { id: "1phkUvQBEKbQJJvMnN84g2w0ElrYmbBvl", title: "Недей ме пита", author: "Пейо Яворов", audio: "gdrive:1phkUvQBEKbQJJvMnN84g2w0ElrYmbBvl" },
       { id: "1a5Tgay2NaXmqn_cQ6IJSZABMFrPw4lbP", title: "Калиопа", author: "Пейо Яворов", audio: "gdrive:1a5Tgay2NaXmqn_cQ6IJSZABMFrPw4lbP" },
@@ -89,7 +89,7 @@ export const albums: Album[] = [
     id: "smirnenski",
     title: "Христо Смирненски",
     description: "Градът, бедните и мечтата за ден.",
-    cover: "covers/smirnenski.svg",
+    cover: "gdrive:1O-jcvAhVerQCaMgFGF8Gf2RffCL_gSXq",
     poems: [
       { id: "1U3qApb9Nm3NRCKvA8GewHAd_ue5EYGbZ", title: "Горчиво кафе", author: "Христо Смирненски", audio: "gdrive:1U3qApb9Nm3NRCKvA8GewHAd_ue5EYGbZ" },
       { id: "1Z_knXBD1GzVDPBY8csi54mAYk3Rkv48d", title: "Среднощни сенки", author: "Христо Смирненски", audio: "gdrive:1Z_knXBD1GzVDPBY8csi54mAYk3Rkv48d" },
@@ -129,7 +129,7 @@ export const albums: Album[] = [
     id: "vaptsarov",
     title: "Никола Вапцаров",
     description: "Вяра, мотори и песен за човека.",
-    cover: "covers/vaptsarov.svg",
+    cover: "gdrive:1yvMzAXTBrAXcCdzbweLAvhMmuq8TsfXN",
     poems: [
       { id: "1NKGEOYvyPrlIbysTyumZg4MM5TKAkJKq", title: "Вяра", author: "Никола Вапцаров", audio: "gdrive:1NKGEOYvyPrlIbysTyumZg4MM5TKAkJKq" },
       { id: "1hHKhsozvFRa3ook0w-xBJ0w_TjXqrSX1", title: "Пролет в завода", author: "Никола Вапцаров", audio: "gdrive:1hHKhsozvFRa3ook0w-xBJ0w_TjXqrSX1" },
@@ -173,7 +173,7 @@ export const albums: Album[] = [
     id: "bashev",
     title: "Владимир Башев",
     description: "Лирика на едно кратко, ярко поколение.",
-    cover: "covers/bashev.svg",
+    cover: "gdrive:1gmLmBQbO7HOY0WIqxOWws3K3VM5QTwk5",
     poems: [
       { id: "1MmFu5vIww4f12s5iuEHpie9pgXm5nVOO", title: "Размисъл", author: "Владимир Башев", audio: "gdrive:1MmFu5vIww4f12s5iuEHpie9pgXm5nVOO" },
       { id: "1Ip0hQ3nj4Zbk4hBDms6VAvdTPbleL34E", title: "Жажда", author: "Владимир Башев", audio: "gdrive:1Ip0hQ3nj4Zbk4hBDms6VAvdTPbleL34E" },
@@ -222,7 +222,7 @@ export const albums: Album[] = [
     id: "damyanov",
     title: "Дамян Дамянов",
     description: "Любов, болка и воля за живот.",
-    cover: "covers/damyanov.svg",
+    cover: "gdrive:13KOjC4Jxuynqt_Yu6h9ZkkoyPZ1AlnDB",
     poems: [
       { id: "1NRhgplwgAVmmqXPPawr1gsSDN7KAZmXL", title: "Старите стихотворения", author: "Дамян Дамянов", audio: "gdrive:1NRhgplwgAVmmqXPPawr1gsSDN7KAZmXL" },
       { id: "1vn93jaZX9qQkcguqpjx1Uy4kic22nILK", title: "Предсказание", author: "Дамян Дамянов", audio: "gdrive:1vn93jaZX9qQkcguqpjx1Uy4kic22nILK" },
@@ -276,7 +276,7 @@ export const albums: Album[] = [
     id: "germanov",
     title: "Андрей Германов",
     description: "Тиха, изповедна лирика.",
-    cover: "covers/germanov.svg",
+    cover: "gdrive:1pMc-4lIQaQMCUx2zaLBGP5fyHv9A0KGQ",
     poems: [
       { id: "1fRDv7FfpABgWJZbaI9yOaUWUvS0iTTBF", title: "Годините не ми отнеха", author: "Андрей Германов", audio: "gdrive:1fRDv7FfpABgWJZbaI9yOaUWUvS0iTTBF" },
       { id: "1Xq_zmlPBRSy0ntR9yor5u1mdBZdTrdc6", title: "Приказка за одъра", author: "Андрей Германов", audio: "gdrive:1Xq_zmlPBRSy0ntR9yor5u1mdBZdTrdc6" },
