@@ -5,12 +5,25 @@
 // Редът: водещите ("Избрано") са първи, после поетите; стиховете — по номер.
 import { writeFileSync, existsSync } from 'node:fs'
 
-// Корица на поет: предпочита истински портрет covers/<id>.png (генериран от
-// gen-ai-covers.mjs), иначе ползва SVG постера covers/<id>.svg.
+// Истински портрети на поетите в Google Drive (Images/<Поет>/). Имат
+// предимство пред локалните корици.
+const poetPhoto = {
+  vazov: '1e_vbzma_bsQ992VELCkVQdoJ16gK4b6A',
+  yavorov: '1WA1zbc3_zRj5s81GC7LXKZs0wgu_C2wl',
+  smirnenski: '1O-jcvAhVerQCaMgFGF8Gf2RffCL_gSXq',
+  vaptsarov: '1yvMzAXTBrAXcCdzbweLAvhMmuq8TsfXN',
+  bashev: '1gmLmBQbO7HOY0WIqxOWws3K3VM5QTwk5',
+  damyanov: '13KOjC4Jxuynqt_Yu6h9ZkkoyPZ1AlnDB',
+  germanov: '1pMc-4lIQaQMCUx2zaLBGP5fyHv9A0KGQ',
+}
+
+// Корица на поет: Drive портрет → локален .png → SVG постер.
 const poetCover = (id) =>
-  existsSync(new URL(`../public/covers/${id}.png`, import.meta.url))
-    ? `covers/${id}.png`
-    : `covers/${id}.svg`
+  poetPhoto[id]
+    ? `gdrive:${poetPhoto[id]}`
+    : existsSync(new URL(`../public/covers/${id}.png`, import.meta.url))
+      ? `covers/${id}.png`
+      : `covers/${id}.svg`
 
 // Схема "gdrive:<id>" — преобразува се към Drive API линка (с ключа)
 // на едно място, в src/lib/asset.ts.
