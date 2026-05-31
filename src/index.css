@@ -214,7 +214,9 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
+  /* Текстовият блок седи в долната трета, ясно над ръба. */
   justify-content: flex-end;
+  padding-bottom: 12%;
 }
 
 .daily-kicker {
