@@ -13,7 +13,7 @@ export default defineConfig(() => {
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt'],
+      includeAssets: ['favicon.svg', 'logo.svg', 'robots.txt'],
       manifest: {
         name: 'Тих Стих',
         short_name: 'Тих Стих',
@@ -26,13 +26,13 @@ export default defineConfig(() => {
         scope: base,
         icons: [
           {
-            src: 'favicon.svg',
+            src: 'logo.svg',
             sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'any',
           },
           {
-            src: 'favicon.svg',
+            src: 'logo.svg',
             sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'maskable',

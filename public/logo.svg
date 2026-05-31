@@ -1,11 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Тих Стих">
   <defs>
-    <linearGradient id="fg" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="tsg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#8fa47f"/>
       <stop offset="1" stop-color="#7c9069"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#fg)"/>
+  <rect width="64" height="64" rx="16" fill="url(#tsg)"/>
+  <!-- Тихи звукови вълни — изречената поезия -->
   <g fill="none" stroke="#edebe5" stroke-linecap="round">
     <path d="M21 32a11 11 0 0 1 22 0" stroke-width="3" opacity="0.55"/>
     <path d="M26 32a6 6 0 0 1 12 0" stroke-width="3" opacity="0.8"/>

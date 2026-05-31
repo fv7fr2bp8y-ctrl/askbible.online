@@ -72,7 +72,10 @@ export default function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1 className="brand">Тих Стих</h1>
+        <div className="brand-row">
+          <img className="brand-logo" src={assetUrl('/logo.svg')} alt="" aria-hidden width={44} height={44} />
+          <h1 className="brand">Тих Стих</h1>
+        </div>
         <p className="tagline">Дневна доза поезия срещу шума на света</p>
       </header>
 
