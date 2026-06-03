@@ -1,37 +1,48 @@
-// Pipeline за английски гласове през OpenAI (само хост api.openai.com).
+// Pipeline за английски гласове през Google Cloud (всичко на *.googleapis.com,
+// което вече е разрешено в мрежата — не трябва нова сесия).
 //
-// За всеки стих: сваля БГ аудио от Drive → Whisper транскрипция →
-// GPT поетичен превод BG→EN → TTS английско аудио (mp3).
+// За всеки стих: сваля БГ аудио от Drive → Speech-to-Text (БГ текст) →
+// Translation (BG→EN) → Text-to-Speech (английско аудио, mp3).
 //
-// Изисква:
-//   1) Мрежова политика, разрешаваща api.openai.com (Network access → Custom)
-//   2) OPENAI_API_KEY в средата
+// Изисква на проекта да са включени:
+//   - Cloud Text-to-Speech API
+//   - Cloud Translation API
+//   - Cloud Speech-to-Text API
+// и ключът (VITE_DRIVE_API_KEY или вградения) да ги разрешава.
 //
 // Стартирай:
-//   OPENAI_API_KEY=sk-... node scripts/gen-en-audio.mjs            # всички
-//   OPENAI_API_KEY=sk-... node scripts/gen-en-audio.mjs 5          # първите 5 (тест)
-//   OPENAI_API_KEY=sk-... node scripts/gen-en-audio.mjs 19Lbe5...  # конкретен id
+//   node scripts/gen-en-audio.mjs 2            # първите 2 (тест)
+//   node scripts/gen-en-audio.mjs <id>         # конкретен стих
+//   node scripts/gen-en-audio.mjs              # всички
 //
 // Изход:
-//   public/audio-en/<id>.mp3              — английското аудио
-//   scripts/audio-en/<id>.json           — {textBg, textEn} (за преглед/редакция)
-// После:  node scripts/gen-poems.mjs && npm run build   (хваща audio-en автоматично)
+//   public/audio-en/<id>.mp3        — английското аудио
+//   scripts/audio-en/<id>.json      — {textBg, textEn} (за преглед/ръчна корекция)
+// После:  node scripts/gen-poems.mjs && npm run build
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs'
 
-const KEY = process.env.OPENAI_API_KEY
-if (!KEY) {
-  console.error('Липсва OPENAI_API_KEY.')
-  process.exit(1)
-}
-const DRIVE_KEY = process.env.VITE_DRIVE_API_KEY || 'AIzaSyD837Xsi3__ncRI0ZArFHl0F5Yq3M_KvGA'
-const VOICE = process.env.TTS_VOICE || 'alloy' // alloy/echo/fable/onyx/nova/shimmer
+const KEY = process.env.VITE_DRIVE_API_KEY || 'AIzaSyD837Xsi3__ncRI0ZArFHl0F5Yq3M_KvGA'
+const REFERER = 'https://tihstih.eu/'
+const EN_VOICE = process.env.TTS_VOICE || 'en-US-Neural2-D'
 
 const AUDIO_DIR = new URL('../public/audio-en/', import.meta.url)
 const TEXT_DIR = new URL('./audio-en/', import.meta.url)
 mkdirSync(AUDIO_DIR, { recursive: true })
 mkdirSync(TEXT_DIR, { recursive: true })
 
-// Парсваме стиховете директно от генерирания src/data/poems.ts.
+const g = (host, path) => `https://${host}.googleapis.com/${path}?key=${KEY}`
+
+async function post(url, payload) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Referer: REFERER },
+    body: JSON.stringify(payload),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${data?.error?.message ?? JSON.stringify(data)}`)
+  return data
+}
+
 function loadPoems() {
   const src = readFileSync(new URL('../src/data/poems.ts', import.meta.url), 'utf8')
   const re = /\{\s*id:\s*"([^"]+)",\s*title:\s*"([^"]+)",\s*author:\s*"([^"]+)"/g
@@ -41,62 +52,39 @@ function loadPoems() {
   return out
 }
 
-async function openai(path, { method = 'POST', json, form, raw } = {}) {
-  const headers = { Authorization: `Bearer ${KEY}` }
-  let body
-  if (json) {
-    headers['Content-Type'] = 'application/json'
-    body = JSON.stringify(json)
-  } else if (form) {
-    body = form
-  }
-  const res = await fetch(`https://api.openai.com${path}`, { method, headers, body })
-  if (!res.ok) throw new Error(`${path} → HTTP ${res.status}: ${await res.text()}`)
-  return raw ? Buffer.from(await res.arrayBuffer()) : res.json()
-}
-
 async function downloadBg(id) {
-  // Ключът е referrer-restricted → подаваме Referer на сайта.
-  const url = `https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_KEY}`
-  const res = await fetch(url, { headers: { Referer: 'https://tihstih.eu/' } })
+  const url = `https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${KEY}`
+  const res = await fetch(url, { headers: { Referer: REFERER } })
   if (!res.ok) throw new Error(`Drive ${id} → HTTP ${res.status}`)
   return Buffer.from(await res.arrayBuffer())
 }
 
-async function transcribe(mp3, id) {
-  const form = new FormData()
-  form.append('file', new Blob([mp3], { type: 'audio/mpeg' }), `${id}.mp3`)
-  form.append('model', 'whisper-1')
-  form.append('language', 'bg')
-  const data = await openai('/v1/audio/transcriptions', { form })
-  return data.text.trim()
+// Speech-to-Text (синхронно; за по-дълги файлове ползвай ръчен textBg).
+async function transcribe(mp3) {
+  const data = await post(g('speech', 'v1/speech:recognize'), {
+    config: { encoding: 'MP3', sampleRateHertz: 24000, languageCode: 'bg-BG', enableAutomaticPunctuation: true },
+    audio: { content: mp3.toString('base64') },
+  })
+  return (data.results ?? []).map((r) => r.alternatives?.[0]?.transcript ?? '').join('\n').trim()
 }
 
-async function translate(textBg, title, author) {
-  const data = await openai('/v1/chat/completions', {
-    json: {
-      model: 'gpt-4o',
-      temperature: 0.4,
-      messages: [
-        {
-          role: 'system',
-          content:
-            'You are a literary translator of Bulgarian poetry into English. ' +
-            'Translate faithfully and poetically, preserving imagery, tone and line breaks. ' +
-            'Output ONLY the translated poem, no notes.',
-        },
-        { role: 'user', content: `Poem: "${title}" by ${author}\n\n${textBg}` },
-      ],
-    },
+async function translate(textBg) {
+  const data = await post(g('translation', 'language/translate/v2'), {
+    q: textBg,
+    source: 'bg',
+    target: 'en',
+    format: 'text',
   })
-  return data.choices[0].message.content.trim()
+  return data.data.translations[0].translatedText.trim()
 }
 
 async function tts(textEn) {
-  return openai('/v1/audio/speech', {
-    json: { model: 'gpt-4o-mini-tts', voice: VOICE, input: textEn, response_format: 'mp3' },
-    raw: true,
+  const data = await post(g('texttospeech', 'v1/text:synthesize'), {
+    input: { text: textEn },
+    voice: { languageCode: 'en-US', name: EN_VOICE },
+    audioConfig: { audioEncoding: 'MP3', speakingRate: 0.92 },
   })
+  return Buffer.from(data.audioContent, 'base64')
 }
 
 const all = loadPoems()
@@ -105,7 +93,7 @@ let list = all
 if (arg && /^\d+$/.test(arg)) list = all.slice(0, Number(arg))
 else if (arg) list = all.filter((p) => p.id === arg)
 
-console.log(`Ще обработя ${list.length} стиха (глас: ${VOICE}).`)
+console.log(`Ще обработя ${list.length} стиха (глас: ${EN_VOICE}).`)
 let done = 0
 for (const p of list) {
   const mp3Path = new URL(`${p.id}.mp3`, AUDIO_DIR)
@@ -115,14 +103,19 @@ for (const p of list) {
     continue
   }
   try {
-    const bg = await downloadBg(p.id)
-    const textBg = existsSync(txtPath)
-      ? JSON.parse(readFileSync(txtPath, 'utf8')).textBg
-      : await transcribe(bg, p.id)
-    const textEn = await translate(textBg, p.title, p.author)
+    // textBg може да е подаден ръчно (по-точно за дълги стихове).
+    let textBg = existsSync(txtPath) ? JSON.parse(readFileSync(txtPath, 'utf8')).textBg : ''
+    if (!textBg) {
+      const bg = await downloadBg(p.id)
+      textBg = await transcribe(bg)
+    }
+    if (!textBg) {
+      console.error(`✗ ${p.title}: празна транскрипция (вероятно >60s — добави ръчно textBg)`)
+      continue
+    }
+    const textEn = await translate(textBg)
     writeFileSync(txtPath, JSON.stringify({ id: p.id, title: p.title, textBg, textEn }, null, 2))
-    const mp3 = await tts(textEn)
-    writeFileSync(mp3Path, mp3)
+    writeFileSync(mp3Path, await tts(textEn))
     done++
     console.log(`✓ ${p.title} — ${p.author}`)
   } catch (e) {
