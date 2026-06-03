@@ -360,6 +360,9 @@ const fmtPoem = (po) => {
     `author: ${JSON.stringify(po.author)}`,
     `audio: ${JSON.stringify(driveUrl(po.id))}`,
   ]
+  // Английско аудио, ако е генерирано (public/audio-en/<id>.mp3).
+  if (existsSync(new URL(`../public/audio-en/${po.id}.mp3`, import.meta.url)))
+    f.push(`audioEn: ${JSON.stringify(`audio-en/${po.id}.mp3`)}`)
   if (po.cover) f.push(`cover: ${JSON.stringify(coverUrl(po.cover))}`)
   return `      { ${f.join(', ')} },`
 }

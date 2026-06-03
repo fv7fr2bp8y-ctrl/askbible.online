@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Poem } from '../types'
 import { assetUrl } from '../lib/asset'
+import { useI18n } from '../lib/i18n'
 
 /**
  * Управлява един <audio> елемент за цялото приложение.
  * Връща текущия стих, състоянието и функции за управление.
  */
 export function useAudioPlayer() {
+  const { lang, authorName } = useI18n()
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [current, setCurrent] = useState<Poem | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -55,7 +57,9 @@ export function useAudioPlayer() {
     }
 
     setCurrent(poem)
-    audio.src = assetUrl(poem.audio)
+    // В EN режим ползваме английското аудио, ако е налично; иначе оригинала.
+    const source = lang === 'en' && poem.audioEn ? poem.audioEn : poem.audio
+    audio.src = assetUrl(source)
     audio.currentTime = 0
     void audio.play().catch(() => {
       // Възпроизвеждането може да е блокирано (липсва файл и т.н.).
@@ -66,11 +70,11 @@ export function useAudioPlayer() {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: poem.title,
-        artist: poem.author ?? 'Тих Стих',
+        artist: authorName(poem.author) ?? 'Тих Стих',
         artwork: poem.cover ? [{ src: assetUrl(poem.cover) }] : undefined,
       })
     }
-  }, [current])
+  }, [current, lang, authorName])
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current

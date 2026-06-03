@@ -7,6 +7,8 @@ export interface Poem {
   author?: string
   /** Път до аудио файла, спрямо public/, напр. "/audio/moiat-stih.mp3". */
   audio: string
+  /** Английско аудио (по желание) — ползва се в EN режим, ако е налично. */
+  audioEn?: string
   /** Път до обложката, спрямо public/, напр. "/covers/moiat-stih.jpg". */
   cover?: string
   /** Текстът на стиха (по желание) — показва се под плейъра. */
