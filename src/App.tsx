@@ -5,6 +5,7 @@ import { Player } from './components/Player'
 import { ShareButton } from './components/ShareButton'
 import { assetUrl } from './lib/asset'
 import { poetTheme, initials } from './lib/theme'
+import { useI18n } from './lib/i18n'
 import type { Poem } from './types'
 
 interface PoemEntry {
@@ -14,6 +15,7 @@ interface PoemEntry {
 }
 
 export default function App() {
+  const { t, lang, toggle, albumTitle } = useI18n()
   const player = useAudioPlayer()
   const [query, setQuery] = useState('')
   // Стартираме в секция „Избрано“ (първият албум), не в „Всички“.
@@ -75,27 +77,34 @@ export default function App() {
         <div className="brand-row">
           <img className="brand-logo" src={assetUrl('/logo.svg')} alt="" aria-hidden width={44} height={44} />
           <h1 className="brand">Тих Стих</h1>
+          <button
+            className="lang-toggle"
+            onClick={toggle}
+            aria-label={lang === 'bg' ? 'Switch to English' : 'Превключи на български'}
+          >
+            {t.langName}
+          </button>
         </div>
-        <p className="tagline">Дневна доза поезия срещу шума на света</p>
+        <p className="tagline">{t.tagline}</p>
       </header>
 
       <div className="search">
         <span className="search-icon" aria-hidden>⌕</span>
         <input
           type="search"
-          placeholder="Какво искаш да чуеш днес?"
+          placeholder={t.searchPlaceholder}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label="Търсене"
+          aria-label={t.searchAria}
         />
       </div>
 
-      <nav className="chips" aria-label="Категории">
+      <nav className="chips" aria-label={t.categories}>
         <button
           className={`chip${category === 'all' ? ' is-active' : ''}`}
           onClick={() => setCategory('all')}
         >
-          Всички
+          {t.all}
         </button>
         {albums.map((a) => (
           <button
@@ -103,7 +112,7 @@ export default function App() {
             className={`chip${category === a.id ? ' is-active' : ''}`}
             onClick={() => setCategory(a.id)}
           >
-            {a.title}
+            {albumTitle(a.id, a.title)}
           </button>
         ))}
       </nav>
@@ -111,7 +120,11 @@ export default function App() {
       {!q && featured && (
         <FeaturedCard
           poem={featured.poem}
-          label={category === 'all' ? 'Стих на деня' : activeAlbum?.title ?? featured.categoryTitle}
+          label={
+            category === 'all'
+              ? t.poemOfDay
+              : albumTitle(activeAlbum?.id ?? '', activeAlbum?.title ?? featured.categoryTitle)
+          }
           albumCover={(activeAlbum ?? albums[0])?.cover}
           isCurrent={player.current?.id === featured.poem.id}
           isPlaying={player.isPlaying}
@@ -121,7 +134,7 @@ export default function App() {
 
       <main className="library">
         {filtered.length === 0 ? (
-          <p className="empty">Няма намерени стихове.</p>
+          <p className="empty">{t.empty}</p>
         ) : (
           filtered.map(({ poem, categoryTitle }) => (
             <PoemCard
@@ -164,10 +177,12 @@ function FeaturedCard({
   isPlaying: boolean
   onPlay: () => void
 }) {
+  const { t, authorName } = useI18n()
   const th = poetTheme(poem.author ?? label)
   const playing = isCurrent && isPlaying
   const firstLine = poem.text?.split('\n').find((l) => l.trim()) ?? ''
   const cover = poem.cover ?? albumCover
+  const author = authorName(poem.author)
 
   const style = cover
     ? { backgroundImage: `url(${assetUrl(cover)})` }
@@ -178,13 +193,13 @@ function FeaturedCard({
       className={`daily${cover ? ' has-image' : ''}${isCurrent ? ' is-current' : ''}`}
       style={style}
       onClick={onPlay}
-      aria-label={playing ? `Пауза — „${poem.title}“` : `Пусни „${poem.title}“`}
+      aria-label={playing ? t.pauseTitle(poem.title) : t.play(poem.title)}
     >
       {!cover && <span className="daily-mono">{initials(poem.author ?? label)}</span>}
       <div className="daily-body">
         <span className="daily-kicker">{label}</span>
         <h2 className="daily-title">{poem.title}</h2>
-        {poem.author && <p className="daily-author">{poem.author}</p>}
+        {author && <p className="daily-author">{author}</p>}
         {firstLine && <p className="daily-quote">„{firstLine}“</p>}
       </div>
       <span className="daily-play" aria-hidden>
@@ -202,21 +217,23 @@ interface CardProps {
   onPlay: () => void
 }
 
-function lengthLabel(duration?: number): string | null {
+function lengthLabel(duration: number | undefined, t: { short: string; medium: string; long: string }): string | null {
   if (!duration) return null
-  if (duration < 90) return 'Кратко'
-  if (duration < 180) return 'Средно'
-  return 'Дълго'
+  if (duration < 90) return t.short
+  if (duration < 180) return t.medium
+  return t.long
 }
 
 function PoemCard({ poem, category, isCurrent, isPlaying, onPlay }: CardProps) {
+  const { t, authorName } = useI18n()
   // Цитат = първият ред от текста; ако няма — заглавието.
   const firstLine = poem.text?.split('\n').find((l) => l.trim()) ?? ''
   const quote = firstLine || poem.title
+  const author = authorName(poem.author)
   const meta = firstLine
-    ? `${poem.title}${poem.author ? ' — ' + poem.author : ''}`
-    : poem.author ?? category
-  const length = lengthLabel(poem.duration)
+    ? `${poem.title}${author ? ' — ' + author : ''}`
+    : author ?? category
+  const length = lengthLabel(poem.duration, t)
   const th = poetTheme(poem.author ?? category)
   const playing = isCurrent && isPlaying
 
@@ -225,7 +242,7 @@ function PoemCard({ poem, category, isCurrent, isPlaying, onPlay }: CardProps) {
       <button
         className={`card-thumb${poem.cover ? ' has-image' : ''}`}
         onClick={onPlay}
-        aria-label={playing ? 'Пауза' : `Пусни „${poem.title}“`}
+        aria-label={playing ? t.pause : t.play(poem.title)}
         style={
           poem.cover
             ? { backgroundImage: `url(${assetUrl(poem.cover)})` }
@@ -236,7 +253,7 @@ function PoemCard({ poem, category, isCurrent, isPlaying, onPlay }: CardProps) {
         <span className="card-thumb-play">{playing ? '❚❚' : '▶'}</span>
       </button>
 
-      <button className="card-main" onClick={onPlay} aria-label={`Пусни „${poem.title}“`}>
+      <button className="card-main" onClick={onPlay} aria-label={t.play(poem.title)}>
         <p className="card-quote">„{quote}“</p>
         <p className="card-meta">{meta}</p>
         <div className="card-footer">

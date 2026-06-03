@@ -71,6 +71,26 @@ body {
   letter-spacing: -0.01em;
 }
 
+.lang-toggle {
+  margin-left: auto;
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--chip-text);
+  border-radius: 999px;
+  padding: 0.34rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.lang-toggle:hover {
+  background: var(--chip-bg);
+}
+
 .tagline {
   color: var(--muted);
   margin: 0.25rem 0 0;

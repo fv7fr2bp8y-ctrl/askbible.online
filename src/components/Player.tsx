@@ -1,6 +1,7 @@
 import type { Poem } from '../types'
 import { ShareButton } from './ShareButton'
 import { assetUrl } from '../lib/asset'
+import { useI18n } from '../lib/i18n'
 
 interface Props {
   current: Poem | null
@@ -20,7 +21,9 @@ function fmt(seconds: number): string {
 
 /** Лентата "сега се възпроизвежда", закотвена долу. */
 export function Player({ current, isPlaying, progress, duration, onToggle, onSeek }: Props) {
+  const { t, authorName } = useI18n()
   if (!current) return null
+  const author = authorName(current.author)
 
   return (
     <div className="player">
@@ -29,7 +32,7 @@ export function Player({ current, isPlaying, progress, duration, onToggle, onSee
       )}
       <div className="player-info">
         <div className="player-title">{current.title}</div>
-        {current.author && <div className="player-author">{current.author}</div>}
+        {author && <div className="player-author">{author}</div>}
         <div className="player-bar">
           <span className="player-time">{fmt(progress)}</span>
           <input
@@ -39,12 +42,12 @@ export function Player({ current, isPlaying, progress, duration, onToggle, onSee
             value={progress}
             step={0.1}
             onChange={(e) => onSeek(Number(e.target.value))}
-            aria-label="Превъртане"
+            aria-label={t.seek}
           />
           <span className="player-time">{fmt(duration)}</span>
         </div>
       </div>
-      <button className="player-toggle" onClick={onToggle} aria-label={isPlaying ? 'Пауза' : 'Пусни'}>
+      <button className="player-toggle" onClick={onToggle} aria-label={isPlaying ? t.pause : t.play(current.title)}>
         {isPlaying ? '❚❚' : '▶'}
       </button>
       <ShareButton poem={current} />
