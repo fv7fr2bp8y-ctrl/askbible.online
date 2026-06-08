@@ -7,7 +7,7 @@
  */
 const KEY = import.meta.env.VITE_TTS_API_KEY as string | undefined
 const MODEL = (import.meta.env.VITE_TTS_MODEL as string | undefined) ?? 'gemini-2.5-flash-preview-tts'
-const VOICE = (import.meta.env.VITE_TTS_VOICE as string | undefined) ?? 'Iapetus'
+const VOICE = (import.meta.env.VITE_TTS_VOICE as string | undefined) ?? 'Charon'
 
 const STYLE: Record<'bg' | 'en', string> = {
   bg: 'Прочети бавно, спокойно, топло и с благоговение, като свещен текст:',
