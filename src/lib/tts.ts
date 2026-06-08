@@ -1,4 +1,4 @@
-import { DRIVE_API_KEY } from './drive'
+import { TTS_API_KEY } from './drive'
 
 /**
  * Хубав глас през Google Cloud Text-to-Speech (neural), с резерв към
@@ -20,7 +20,7 @@ async function googleTtsDataUrl(text: string, lang: 'bg' | 'en'): Promise<string
   if (cache.has(ck)) return cache.get(ck)!
   try {
     const res = await fetch(
-      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${DRIVE_API_KEY}`,
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${TTS_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
