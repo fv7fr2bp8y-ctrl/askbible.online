@@ -38,6 +38,9 @@ export interface Strings {
     close: string
     savedTitle: string
     noSaved: string
+    voice: string
+    male: string
+    female: string
     cats: { gospels: string; psalms: string; proverbs: string; nt: string; ot: string }
   }
 }
@@ -79,6 +82,9 @@ const STRINGS: Record<Lang, Strings> = {
       close: 'Затвори',
       savedTitle: 'Запазени',
       noSaved: 'Още нямаш запазени откъси.',
+      voice: 'Глас',
+      male: 'мъжки',
+      female: 'женски',
       cats: { gospels: 'Евангелия', psalms: 'Псалми', proverbs: 'Притчи', nt: 'Нов Завет', ot: 'Стар Завет' },
     },
   },
@@ -118,6 +124,9 @@ const STRINGS: Record<Lang, Strings> = {
       close: 'Close',
       savedTitle: 'Saved',
       noSaved: 'You have no saved passages yet.',
+      voice: 'Voice',
+      male: 'male',
+      female: 'female',
       cats: { gospels: 'Gospels', psalms: 'Psalms', proverbs: 'Proverbs', nt: 'New Testament', ot: 'Old Testament' },
     },
   },

@@ -7,7 +7,42 @@
  */
 const KEY = import.meta.env.VITE_TTS_API_KEY as string | undefined
 const MODEL = (import.meta.env.VITE_TTS_MODEL as string | undefined) ?? 'gemini-2.5-flash-preview-tts'
-const VOICE = (import.meta.env.VITE_TTS_VOICE as string | undefined) ?? 'Algenib'
+const DEFAULT_VOICE = (import.meta.env.VITE_TTS_VOICE as string | undefined) ?? 'Algenib'
+
+/** Гласове за избор в приложението (Gemini prebuilt). g: пол. */
+export const VOICES: { id: string; g: 'm' | 'f' }[] = [
+  { id: 'Algenib', g: 'm' },
+  { id: 'Charon', g: 'm' },
+  { id: 'Iapetus', g: 'm' },
+  { id: 'Sadaltager', g: 'm' },
+  { id: 'Schedar', g: 'm' },
+  { id: 'Aoede', g: 'f' },
+  { id: 'Kore', g: 'f' },
+  { id: 'Leda', g: 'f' },
+  { id: 'Vindemiatrix', g: 'f' },
+  { id: 'Despina', g: 'f' },
+]
+
+let voiceName = DEFAULT_VOICE
+try {
+  const saved = localStorage.getItem('tts-voice')
+  if (saved) voiceName = saved
+} catch {
+  /* ignore */
+}
+
+export function getVoice(): string {
+  return voiceName
+}
+
+export function setVoice(v: string): void {
+  voiceName = v
+  try {
+    localStorage.setItem('tts-voice', v)
+  } catch {
+    /* ignore */
+  }
+}
 
 const STYLE: Record<'bg' | 'en', string> = {
   bg: 'Прочети спокойно, топло и осмислено, с естествено темпо, като духовен текст:',
@@ -48,7 +83,7 @@ function pcmToWavUrl(pcm: Uint8Array, rate: number): string {
 
 async function geminiTts(text: string, lang: 'bg' | 'en'): Promise<string | null> {
   if (!KEY) return null
-  const ck = lang + '|' + text
+  const ck = lang + '|' + voiceName + '|' + text
   if (cache.has(ck)) return cache.get(ck)!
   try {
     const res = await fetch(
@@ -60,7 +95,7 @@ async function geminiTts(text: string, lang: 'bg' | 'en'): Promise<string | null
           contents: [{ parts: [{ text: `${STYLE[lang]} ${text}` }] }],
           generationConfig: {
             responseModalities: ['AUDIO'],
-            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICE } } },
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName } } },
           },
         }),
       },

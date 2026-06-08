@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { passages } from './data/passages'
 import { assetUrl } from './lib/asset'
 import { useI18n } from './lib/i18n'
-import { speak, stopSpeech, prewarm } from './lib/tts'
+import { speak, stopSpeech, prewarm, getVoice, setVoice, VOICES } from './lib/tts'
 import type { Passage, PassageCategory } from './types'
 
 type Filter = PassageCategory | 'all'
@@ -32,6 +32,7 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
   })
   const [showContext, setShowContext] = useState(false)
   const [showSaved, setShowSaved] = useState(false)
+  const [voice, setVoiceState] = useState<string>(() => getVoice())
 
   const draw = useCallback(
     (f: Filter) => {
@@ -65,7 +66,7 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
     const txt = lang === 'bg' ? current.bg : current.en
     const id = setTimeout(() => prewarm(txt, lang), 600)
     return () => clearTimeout(id)
-  }, [current, lang])
+  }, [current, lang, voice])
 
   if (!current) return null
   const text = lang === 'bg' ? current.bg : current.en
@@ -113,6 +114,25 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
       <button className="open-again" onClick={() => draw(filter)}>
         ↻ {b.openAgain}
       </button>
+
+      <label className="voice-row">
+        <span className="voice-label">🔊 {b.voice}</span>
+        <select
+          className="voice-select"
+          value={voice}
+          onChange={(e) => {
+            setVoice(e.target.value)
+            setVoiceState(e.target.value)
+            stopSpeech()
+          }}
+        >
+          {VOICES.map((v) => (
+            <option key={v.id} value={v.id}>
+              {v.id} · {v.g === 'm' ? b.male : b.female}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <div className="bible-foot">
         <button className="text-btn" onClick={() => setShowSaved(true)}>

@@ -755,3 +755,28 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Избор на глас */
+.voice-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.voice-label {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.voice-select {
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+}
