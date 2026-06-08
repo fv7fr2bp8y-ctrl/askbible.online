@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { passages } from './data/passages'
 import { assetUrl } from './lib/asset'
 import { useI18n } from './lib/i18n'
+import { speak, stopSpeech } from './lib/tts'
 import type { Passage, PassageCategory } from './types'
 
 type Filter = PassageCategory | 'all'
@@ -134,41 +135,32 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
   )
 }
 
-/** Чете текста на глас през браузъра (Web Speech API). */
-function ListenButton({ text, lang, listen, stop }: { text: string; lang: string; listen: string; stop: string }) {
-  const [speaking, setSpeaking] = useState(false)
-  const supported = typeof window !== 'undefined' && 'speechSynthesis' in window
-  const uref = useRef<SpeechSynthesisUtterance | null>(null)
+/** Чете текста на глас — Google neural глас, с резерв браузърния. */
+function ListenButton({ text, lang, listen, stop }: { text: string; lang: 'bg' | 'en'; listen: string; stop: string }) {
+  const [state, setState] = useState<'idle' | 'loading' | 'speaking'>('idle')
 
-  useEffect(() => () => { if (supported) window.speechSynthesis.cancel() }, [supported])
   useEffect(() => {
-    if (supported) window.speechSynthesis.cancel()
-    setSpeaking(false)
-  }, [text, supported])
+    stopSpeech()
+    setState('idle')
+  }, [text])
 
-  if (!supported) return null
+  useEffect(() => () => stopSpeech(), [])
 
   function toggle() {
-    const synth = window.speechSynthesis
-    if (speaking) {
-      synth.cancel()
-      setSpeaking(false)
+    if (state !== 'idle') {
+      stopSpeech()
+      setState('idle')
       return
     }
-    synth.cancel()
-    const u = new SpeechSynthesisUtterance(text)
-    u.lang = lang === 'bg' ? 'bg-BG' : 'en-US'
-    u.rate = 0.92
-    u.onend = () => setSpeaking(false)
-    u.onerror = () => setSpeaking(false)
-    uref.current = u
-    synth.speak(u)
-    setSpeaking(true)
+    setState('loading')
+    void speak(text, lang, () => setState('idle')).then(() => {
+      setState((s) => (s === 'loading' ? 'speaking' : s))
+    })
   }
 
   return (
-    <button className={`pill${speaking ? ' is-on' : ''}`} onClick={toggle}>
-      {speaking ? '❚❚ ' + stop : '▶ ' + listen}
+    <button className={`pill${state !== 'idle' ? ' is-on' : ''}`} onClick={toggle}>
+      {state === 'loading' ? '… ' + listen : state === 'speaking' ? '❚❚ ' + stop : '▶ ' + listen}
     </button>
   )
 }
