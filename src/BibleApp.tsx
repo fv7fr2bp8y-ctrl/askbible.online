@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { passages } from './data/passages'
 import { assetUrl } from './lib/asset'
 import { useI18n } from './lib/i18n'
-import { speak, stopSpeech } from './lib/tts'
+import { speak, stopSpeech, prewarm } from './lib/tts'
 import type { Passage, PassageCategory } from './types'
 
 type Filter = PassageCategory | 'all'
@@ -58,6 +58,14 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
   function toggleSave(id: string) {
     setSaved((s) => (s.includes(id) ? s.filter((x) => x !== id) : [id, ...s]))
   }
+
+  // Предварително синтезираме текущия откъс, та „Чуй" да е мигновено.
+  useEffect(() => {
+    if (!current) return
+    const txt = lang === 'bg' ? current.bg : current.en
+    const id = setTimeout(() => prewarm(txt, lang), 600)
+    return () => clearTimeout(id)
+  }, [current, lang])
 
   if (!current) return null
   const text = lang === 'bg' ? current.bg : current.en

@@ -10,8 +10,8 @@ const MODEL = (import.meta.env.VITE_TTS_MODEL as string | undefined) ?? 'gemini-
 const VOICE = (import.meta.env.VITE_TTS_VOICE as string | undefined) ?? 'Charon'
 
 const STYLE: Record<'bg' | 'en', string> = {
-  bg: 'Прочети бавно, спокойно, топло и с благоговение, като свещен текст:',
-  en: 'Read slowly, calmly, warmly and with reverence, like a sacred text:',
+  bg: 'Прочети спокойно, топло и осмислено, с естествено темпо, като духовен текст:',
+  en: 'Read calmly, warmly and meaningfully, at a natural pace, like a spiritual text:',
 }
 
 const cache = new Map<string, string>()
@@ -82,6 +82,11 @@ async function geminiTts(text: string, lang: 'bg' | 'en'): Promise<string | null
 }
 
 let current: HTMLAudioElement | null = null
+
+/** Предварително синтезира текста наум (за да е готов при „Чуй"). */
+export function prewarm(text: string, lang: 'bg' | 'en'): void {
+  void geminiTts(text, lang)
+}
 
 export function stopSpeech() {
   if (current) {
