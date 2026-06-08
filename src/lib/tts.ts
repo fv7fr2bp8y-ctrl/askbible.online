@@ -9,8 +9,8 @@ import { TTS_API_KEY } from './drive'
  * Изисква на проекта на ключа да е включен „Cloud Text-to-Speech API".
  */
 const VOICE: Record<'bg' | 'en', { languageCode: string; name?: string }> = {
-  bg: { languageCode: 'bg-BG', name: 'bg-BG-Standard-A' },
-  en: { languageCode: 'en-US', name: 'en-US-Neural2-F' },
+  bg: { languageCode: 'bg-BG', name: 'bg-BG-Chirp3-HD-Aoede' },
+  en: { languageCode: 'en-US', name: 'en-US-Chirp3-HD-Aoede' },
 }
 
 const cache = new Map<string, string>()
@@ -27,7 +27,7 @@ async function googleTtsDataUrl(text: string, lang: 'bg' | 'en'): Promise<string
         body: JSON.stringify({
           input: { text },
           voice: VOICE[lang],
-          audioConfig: { audioEncoding: 'MP3', speakingRate: 0.95, pitch: 0 },
+          audioConfig: { audioEncoding: 'MP3', speakingRate: 0.92 },
         }),
       },
     )
