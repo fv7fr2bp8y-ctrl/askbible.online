@@ -9,8 +9,8 @@ import { TTS_API_KEY } from './drive'
  * Изисква на проекта на ключа да е включен „Cloud Text-to-Speech API".
  */
 const VOICE: Record<'bg' | 'en', { languageCode: string; name?: string }> = {
-  bg: { languageCode: 'bg-BG', name: 'bg-BG-Chirp3-HD-Schedar' },
-  en: { languageCode: 'en-US', name: 'en-US-Chirp3-HD-Schedar' },
+  bg: { languageCode: 'bg-BG', name: 'bg-BG-Chirp3-HD-Iapetus' },
+  en: { languageCode: 'en-US', name: 'en-US-Chirp3-HD-Iapetus' },
 }
 
 const cache = new Map<string, string>()
