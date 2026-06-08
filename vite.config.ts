@@ -40,8 +40,9 @@ export default defineConfig(() => {
         ],
       },
       workbox: {
+        // Библейското аудио не се прекешира (много файлове) — само при поискване.
+        globIgnores: ['**/audio-bible/**'],
         // Аудио файловете могат да са големи — кешираме ги при поискване.
-        // Шаблонът е base-независим (важи и за /TihStih/audio/...).
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.includes('/audio/'),
@@ -50,6 +51,14 @@ export default defineConfig(() => {
               cacheName: 'tihstih-audio',
               expiration: { maxEntries: 60 },
               rangeRequests: true,
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/audio-bible/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'bible-audio',
+              expiration: { maxEntries: 200 },
             },
           },
         ],
