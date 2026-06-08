@@ -94,13 +94,7 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
         <p className="passage-ref">{ref}</p>
 
         <div className="passage-actions">
-          <ListenButton
-            audioPath={`audio-bible/${current.id}.${lang}.mp3`}
-            text={text}
-            lang={lang}
-            listen={b.listen}
-            stop={b.stop}
-          />
+          <ListenButton text={text} lang={lang} listen={b.listen} stop={b.stop} />
           <button className="pill" onClick={() => setShowContext(true)}>{b.readContext}</button>
           <button className={`pill${isSaved ? ' is-on' : ''}`} onClick={() => toggleSave(current.id)}>
             {isSaved ? '✓ ' + b.saved : b.save}
@@ -141,8 +135,8 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
   )
 }
 
-/** Чете текста на глас — предварително генериран файл, с резерв браузърния. */
-function ListenButton({ audioPath, text, lang, listen, stop }: { audioPath: string; text: string; lang: 'bg' | 'en'; listen: string; stop: string }) {
+/** Чете текста на глас — жив Gemini TTS, с резерв браузърния. */
+function ListenButton({ text, lang, listen, stop }: { text: string; lang: 'bg' | 'en'; listen: string; stop: string }) {
   const [state, setState] = useState<'idle' | 'loading' | 'speaking'>('idle')
 
   useEffect(() => {
@@ -159,7 +153,7 @@ function ListenButton({ audioPath, text, lang, listen, stop }: { audioPath: stri
       return
     }
     setState('loading')
-    void speak(audioPath, text, lang, () => setState('idle')).then(() => {
+    void speak(text, lang, () => setState('idle')).then(() => {
       setState((s) => (s === 'loading' ? 'speaking' : s))
     })
   }
