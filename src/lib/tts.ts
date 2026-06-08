@@ -7,7 +7,7 @@
  */
 const KEY = import.meta.env.VITE_TTS_API_KEY as string | undefined
 const MODEL = (import.meta.env.VITE_TTS_MODEL as string | undefined) ?? 'gemini-2.5-flash-preview-tts'
-const DEFAULT_VOICE = (import.meta.env.VITE_TTS_VOICE as string | undefined) ?? 'Algenib'
+const DEFAULT_VOICE = (import.meta.env.VITE_TTS_VOICE as string | undefined) ?? 'Schedar'
 
 /** Гласове за избор в приложението (Gemini prebuilt). g: пол. */
 export const VOICES: { id: string; g: 'm' | 'f' }[] = [
