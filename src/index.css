@@ -551,3 +551,207 @@ body {
     display: none;
   }
 }
+
+/* ===== Писание (Bible) ===== */
+.bible {
+  text-align: center;
+}
+
+.passage {
+  background: var(--surface);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 1.8rem 1.4rem 1.5rem;
+  margin: 0.6rem 0 1rem;
+}
+
+.passage-intro {
+  color: var(--muted);
+  font-size: 0.86rem;
+  margin: 0 0 1rem;
+}
+
+.passage-text {
+  font-family: var(--serif-font);
+  font-size: 1.5rem;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 0 0 1.1rem;
+  quotes: '„' '“';
+}
+
+.passage-text::before { content: open-quote; }
+.passage-text::after { content: close-quote; }
+
+.passage-ref {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--terracotta);
+  margin: 0 0 1.4rem;
+}
+
+.passage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.pill {
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--chip-text);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.pill:hover { background: var(--chip-bg); }
+
+.pill.is-on {
+  background: var(--sage);
+  color: #fff;
+  border-color: var(--sage);
+}
+
+.open-again {
+  display: block;
+  width: 100%;
+  border: none;
+  background: var(--sage);
+  color: #fff;
+  border-radius: 16px;
+  padding: 0.95rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.open-again:hover { background: var(--sage-dark); }
+
+.bible-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.2rem;
+}
+
+.text-btn {
+  border: none;
+  background: none;
+  color: var(--terracotta);
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0.3rem 0.2rem;
+}
+
+.text-btn:hover { text-decoration: underline; }
+
+/* Modal (context / saved) */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(30, 28, 24, 0.5);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-card {
+  background: var(--bg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 86vh;
+  border-radius: 22px 22px 0 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.25);
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.3rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-head h2 {
+  margin: 0;
+  font-family: var(--serif-font);
+  font-size: 1.2rem;
+}
+
+.modal-body {
+  overflow-y: auto;
+  padding: 1rem 1.3rem 2rem;
+  text-align: left;
+}
+
+.muted { color: var(--muted); }
+
+.ctx-verse {
+  margin: 0 0 0.7rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.ctx-num {
+  font-size: 0.7rem;
+  color: var(--muted);
+  vertical-align: super;
+  margin-right: 0.15rem;
+}
+
+.ctx-verse.is-active {
+  background: rgba(143, 164, 127, 0.18);
+  border-left: 3px solid var(--sage);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  margin-left: -0.6rem;
+}
+
+.saved-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.saved-open {
+  flex: 1 1 auto;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  min-width: 0;
+}
+
+.saved-ref {
+  display: block;
+  font-weight: 600;
+  color: var(--terracotta);
+  font-size: 0.88rem;
+}
+
+.saved-text {
+  display: block;
+  color: var(--text);
+  opacity: 0.8;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
