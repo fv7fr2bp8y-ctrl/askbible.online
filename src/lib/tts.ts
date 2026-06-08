@@ -1,48 +1,10 @@
-import { TTS_API_KEY } from './drive'
+import { assetUrl } from './asset'
 
 /**
- * Хубав глас през Google Cloud Text-to-Speech (neural), с резерв към
- * браузърния SpeechSynthesis, ако Google TTS не е наличен.
- *
- * Ключът е същият публичен ключ (referrer-ограничен до tihstih.eu) — браузърът
- * праща referer автоматично, така че извикването минава директно от клиента.
- * Изисква на проекта на ключа да е включен „Cloud Text-to-Speech API".
+ * „Чуй" пуска предварително генерирано аудио (статичен файл, най-високо
+ * качество, без ключ в приложението). Ако файл липсва — пада на браузърния
+ * SpeechSynthesis.
  */
-const VOICE: Record<'bg' | 'en', { languageCode: string; name?: string }> = {
-  bg: { languageCode: 'bg-BG', name: 'bg-BG-Chirp3-HD-Iapetus' },
-  en: { languageCode: 'en-US', name: 'en-US-Chirp3-HD-Iapetus' },
-}
-
-const cache = new Map<string, string>()
-
-async function googleTtsDataUrl(text: string, lang: 'bg' | 'en'): Promise<string | null> {
-  const ck = lang + '|' + text
-  if (cache.has(ck)) return cache.get(ck)!
-  try {
-    const res = await fetch(
-      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${TTS_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          input: { text },
-          voice: VOICE[lang],
-          // LINEAR16 (WAV) — без компресия, естествено темпо за чист звук.
-          audioConfig: { audioEncoding: 'LINEAR16', sampleRateHertz: 24000 },
-        }),
-      },
-    )
-    if (!res.ok) return null
-    const data = await res.json()
-    if (!data.audioContent) return null
-    const url = 'data:audio/wav;base64,' + data.audioContent
-    cache.set(ck, url)
-    return url
-  } catch {
-    return null
-  }
-}
-
 let current: HTMLAudioElement | null = null
 
 export function stopSpeech() {
@@ -56,14 +18,18 @@ export function stopSpeech() {
 }
 
 /**
- * Пуска текста на глас. Връща Promise, който се разрешава, когато звукът
- * приключи (или веднага при грешка). `onStop` се вика при край/спиране.
+ * Пуска озвучаване. `audioPath` е път до предварително генерирания файл
+ * (напр. "audio-bible/<id>.bg.mp3") или null. `onStop` се вика при край/спиране.
  */
-export async function speak(text: string, lang: 'bg' | 'en', onStop: () => void): Promise<void> {
+export async function speak(
+  audioPath: string | null,
+  text: string,
+  lang: 'bg' | 'en',
+  onStop: () => void,
+): Promise<void> {
   stopSpeech()
-  const url = await googleTtsDataUrl(text, lang)
-  if (url) {
-    const audio = new Audio(url)
+  if (audioPath) {
+    const audio = new Audio(assetUrl(audioPath))
     current = audio
     audio.onended = () => {
       if (current === audio) current = null
@@ -75,10 +41,10 @@ export async function speak(text: string, lang: 'bg' | 'en', onStop: () => void)
     }
     try {
       await audio.play()
+      return
     } catch {
-      fallback(text, lang, onStop)
+      // Файлът липсва или не може да се пусне — браузърен глас.
     }
-    return
   }
   fallback(text, lang, onStop)
 }
