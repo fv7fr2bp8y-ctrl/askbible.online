@@ -141,40 +141,27 @@ export function stopSpeech() {
   }
 }
 
-/** Пуска озвучаване на текста. `onStop` се вика при край/спиране. */
+/** Пуска озвучаване на текста (само Gemini). `onStop` се вика при край/спиране. */
 export async function speak(text: string, lang: 'bg' | 'en', onStop: () => void): Promise<void> {
   stopSpeech()
   const url = await geminiTts(text, lang)
-  if (url) {
-    const audio = new Audio(url)
-    current = audio
-    audio.onended = () => {
-      if (current === audio) current = null
-      onStop()
-    }
-    audio.onerror = () => {
-      if (current === audio) current = null
-      fallback(text, lang, onStop)
-    }
-    try {
-      await audio.play()
-      return
-    } catch {
-      /* пробваме браузърния */
-    }
-  }
-  fallback(text, lang, onStop)
-}
-
-function fallback(text: string, lang: 'bg' | 'en', onStop: () => void) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+  if (!url) {
     onStop()
     return
   }
-  const u = new SpeechSynthesisUtterance(text)
-  u.lang = lang === 'bg' ? 'bg-BG' : 'en-US'
-  u.rate = 0.95
-  u.onend = onStop
-  u.onerror = onStop
-  window.speechSynthesis.speak(u)
+  const audio = new Audio(url)
+  current = audio
+  audio.onended = () => {
+    if (current === audio) current = null
+    onStop()
+  }
+  audio.onerror = () => {
+    if (current === audio) current = null
+    onStop()
+  }
+  try {
+    await audio.play()
+  } catch {
+    onStop()
+  }
 }
