@@ -81,28 +81,36 @@ function pcmToWavUrl(pcm: Uint8Array, rate: number): string {
   return 'data:audio/wav;base64,' + btoa(bin)
 }
 
+async function synthOnce(promptText: string): Promise<{ data: string; mimeType?: string } | null> {
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: {
+          responseModalities: ['AUDIO'],
+          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName } } },
+        },
+      }),
+    },
+  )
+  if (!res.ok) return null
+  const data = await res.json()
+  const part = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData
+  return part?.data ? part : null
+}
+
 async function geminiTts(text: string, lang: 'bg' | 'en'): Promise<string | null> {
   if (!KEY) return null
   const ck = lang + '|' + voiceName + '|' + text
   if (cache.has(ck)) return cache.get(ck)!
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `${STYLE[lang]} ${text}` }] }],
-          generationConfig: {
-            responseModalities: ['AUDIO'],
-            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName } } },
-          },
-        }),
-      },
-    )
-    if (!res.ok) return null
-    const data = await res.json()
-    const part = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData
+    // Понякога моделът се обърква от стиловата инструкция и връща текст —
+    // тогава повтаряме само със самия текст.
+    let part = await synthOnce(`${STYLE[lang]} ${text}`)
+    if (!part) part = await synthOnce(text)
     if (!part?.data) return null
     const rate = parseInt((part.mimeType?.match(/rate=(\d+)/) || [])[1] || '24000', 10)
     const raw = atob(part.data)
