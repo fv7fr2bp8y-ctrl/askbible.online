@@ -31,6 +31,9 @@ try {
   /* ignore */
 }
 
+/** Дали гласът е наличен (ключът е подаден при билд). */
+export const TTS_ENABLED = !!(KEY && KEY.length > 8)
+
 export function getVoice(): string {
   return voiceName
 }
@@ -108,8 +111,9 @@ async function geminiTts(text: string, lang: 'bg' | 'en'): Promise<string | null
   if (cache.has(ck)) return cache.get(ck)!
   try {
     // Понякога моделът се обърква от стиловата инструкция и връща текст —
-    // тогава повтаряме само със самия текст.
+    // тогава повтаряме само със самия текст (до няколко опита).
     let part = await synthOnce(`${STYLE[lang]} ${text}`)
+    if (!part) part = await synthOnce(text)
     if (!part) part = await synthOnce(text)
     if (!part?.data) return null
     const rate = parseInt((part.mimeType?.match(/rate=(\d+)/) || [])[1] || '24000', 10)

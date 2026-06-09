@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { passages } from './data/passages'
 import { assetUrl } from './lib/asset'
 import { useI18n } from './lib/i18n'
-import { speak, stopSpeech, prewarm, getVoice, setVoice, VOICES } from './lib/tts'
+import { speak, stopSpeech, prewarm, getVoice, setVoice, VOICES, TTS_ENABLED } from './lib/tts'
 import type { Passage, PassageCategory } from './types'
 
 type Filter = PassageCategory | 'all'
@@ -62,7 +62,7 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
 
   // Предварително синтезираме текущия откъс, та „Чуй" да е мигновено.
   useEffect(() => {
-    if (!current) return
+    if (!current || !TTS_ENABLED) return
     const txt = lang === 'bg' ? current.bg : current.en
     const id = setTimeout(() => prewarm(txt, lang), 600)
     return () => clearTimeout(id)
@@ -103,7 +103,7 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
         <p className="passage-ref">{ref}</p>
 
         <div className="passage-actions">
-          <ListenButton text={text} lang={lang} listen={b.listen} stop={b.stop} />
+          {TTS_ENABLED && <ListenButton text={text} lang={lang} listen={b.listen} stop={b.stop} />}
           <button className="pill" onClick={() => setShowContext(true)}>{b.readContext}</button>
           <button className={`pill${isSaved ? ' is-on' : ''}`} onClick={() => toggleSave(current.id)}>
             {isSaved ? '✓ ' + b.saved : b.save}
@@ -115,6 +115,7 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
         ↻ {b.openAgain}
       </button>
 
+      {TTS_ENABLED && (
       <label className="voice-row">
         <span className="voice-label">🔊 {b.voice}</span>
         <select
@@ -133,6 +134,7 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
           ))}
         </select>
       </label>
+      )}
 
       <div className="bible-foot">
         <button className="text-btn" onClick={() => setShowSaved(true)}>
