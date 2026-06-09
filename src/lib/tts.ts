@@ -47,11 +47,6 @@ export function setVoice(v: string): void {
   }
 }
 
-const STYLE: Record<'bg' | 'en', string> = {
-  bg: 'Прочети спокойно, топло и осмислено, с естествено темпо, като духовен текст:',
-  en: 'Read calmly, warmly and meaningfully, at a natural pace, like a spiritual text:',
-}
-
 const cache = new Map<string, string>()
 
 function writeStr(dv: DataView, off: number, s: string) {
@@ -110,10 +105,9 @@ async function geminiTts(text: string, lang: 'bg' | 'en'): Promise<string | null
   const ck = lang + '|' + voiceName + '|' + text
   if (cache.has(ck)) return cache.get(ck)!
   try {
-    // Понякога моделът се обърква от стиловата инструкция и връща текст —
-    // тогава повтаряме само със самия текст (до няколко опита).
-    let part = await synthOnce(`${STYLE[lang]} ${text}`)
-    if (!part) part = await synthOnce(text)
+    // Само текстът — най-надеждно (стиловите инструкции карат модела понякога
+    // да връща текст вместо аудио). Един повторен опит за всеки случай.
+    let part = await synthOnce(text)
     if (!part) part = await synthOnce(text)
     if (!part?.data) return null
     const rate = parseInt((part.mimeType?.match(/rate=(\d+)/) || [])[1] || '24000', 10)
