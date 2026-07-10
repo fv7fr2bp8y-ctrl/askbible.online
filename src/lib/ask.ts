@@ -47,15 +47,23 @@ function deriveCategory(code: string, t: 'OT' | 'NT'): PassageCategory {
 
 const PROMPT: Record<'bg' | 'en', string> = {
   bg:
-    'Ти помагаш на човек да намери най-подходящия библейски стих за въпроса, тревогата или ' +
-    'чувството, което споделя. Избери РЕАЛЕН, добре известен стих (или до 4 последователни ' +
-    'стиха), който съществува в Библията. Използвай ТОЧНО един "code" от списъка с книги. ' +
+    'Човек ти споделя въпрос, тревога или чувство. НЕ търси буквално съвпадение на думи ' +
+    '(напр. "дъжд"→стих за дъжд, "сън"→стих за сън) — вместо това долови по-дълбоката, ' +
+    'човешка нужда зад въпроса: несигурност за бъдещето, нужда от спокойствие, доверие, ' +
+    'кураж, утеха, надежда, прошка или благодарност. Дори привидно дребен или битов въпрос ' +
+    'е повод да откриеш тази по-дълбока нужда — не отговаряй буквално на въпроса. Избери ' +
+    'РЕАЛЕН, добре известен библейски стих (или до 4 последователни стиха), който говори ' +
+    'именно на тази по-дълбока нужда. Използвай ТОЧНО един "code" от списъка с книги. ' +
     'Върни само JSON: {"code":"<code>","chapter":<число>,"verseStart":<число>,"verseEnd":<число>}\n\n' +
     'Книги (code: българско име):\n',
   en:
-    'You help a person find the most fitting Bible verse for the question, worry, or feeling ' +
-    'they share. Choose a REAL, well-known verse (or up to 4 consecutive verses) that actually ' +
-    'exists in the Bible. Use EXACTLY one "code" from the book list. ' +
+    'A person shares a question, worry, or feeling with you. Do NOT look for literal word ' +
+    'matches (e.g. "rain"→a verse about rain, "sleep"→a verse about sleep) — instead sense ' +
+    'the deeper human need behind the question: uncertainty about the future, the need for ' +
+    'peace, trust, courage, comfort, hope, forgiveness, or gratitude. Even a seemingly small ' +
+    'or mundane question is an occasion to find that deeper need — do not answer the question ' +
+    'literally. Choose a REAL, well-known Bible verse (or up to 4 consecutive verses) that ' +
+    'speaks to that deeper need. Use EXACTLY one "code" from the book list. ' +
     'Return only JSON: {"code":"<code>","chapter":<number>,"verseStart":<number>,"verseEnd":<number>}\n\n' +
     'Books (code: English name):\n',
 }
