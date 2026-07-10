@@ -2,7 +2,10 @@ import { GEMINI_API_KEY, GEMINI_AVAILABLE } from './gemini'
 import { assetUrl } from './asset'
 import type { Passage, PassageCategory } from '../types'
 
-const MODEL = 'gemini-flash-latest'
+// Lite вариант — без "thinking" режим, ~5x по-бърз за тази проста задача
+// (класификация към книга/глава/стих), без загуба на точност при теста ни.
+const MODEL = 'gemini-flash-lite-latest'
+const TIMEOUT_MS = 12_000
 
 export const ASK_ENABLED = GEMINI_AVAILABLE
 
@@ -62,6 +65,8 @@ async function askGemini(question: string, lang: 'bg' | 'en'): Promise<{ code: s
   const books = await loadManifest()
   const list = books.map((b) => `${b.code}: ${lang === 'bg' ? b.bg : b.en}`).join('\n')
   try {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`,
       {
@@ -71,8 +76,9 @@ async function askGemini(question: string, lang: 'bg' | 'en'): Promise<{ code: s
           contents: [{ parts: [{ text: `${PROMPT[lang]}${list}\n\n${lang === 'bg' ? 'Въпрос' : 'Question'}: "${question}"` }] }],
           generationConfig: { responseMimeType: 'application/json' },
         }),
+        signal: controller.signal,
       },
-    )
+    ).finally(() => clearTimeout(timer))
     if (!res.ok) return null
     const data = await res.json()
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text

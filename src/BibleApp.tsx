@@ -63,6 +63,10 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
       setCurrent(match)
       setAnswered(true)
       setShowContext(false)
+    } catch {
+      // Никога не оставяме потребителя без отговор — резерв при неочаквана грешка.
+      setCurrent(pickRandom(passages, current?.id))
+      setAnswered(false)
     } finally {
       setAsking(false)
     }
