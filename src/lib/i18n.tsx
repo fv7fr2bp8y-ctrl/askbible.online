@@ -42,6 +42,11 @@ export interface Strings {
     male: string
     female: string
     cats: { gospels: string; psalms: string; proverbs: string; nt: string; ot: string }
+    askPlaceholder: string
+    askButton: string
+    asking: string
+    answerIntro: string
+    askAria: string
   }
 }
 
@@ -86,6 +91,11 @@ const STRINGS: Record<Lang, Strings> = {
       male: 'мъжки',
       female: 'женски',
       cats: { gospels: 'Евангелия', psalms: 'Псалми', proverbs: 'Притчи', nt: 'Нов Завет', ot: 'Стар Завет' },
+      askPlaceholder: 'Какъв е въпросът, който носиш в себе си?',
+      askButton: 'Намери отговор',
+      asking: 'Търся…',
+      answerIntro: 'Писанието ти отговаря тук:',
+      askAria: 'Задай въпрос',
     },
   },
   en: {
@@ -128,6 +138,11 @@ const STRINGS: Record<Lang, Strings> = {
       male: 'male',
       female: 'female',
       cats: { gospels: 'Gospels', psalms: 'Psalms', proverbs: 'Proverbs', nt: 'New Testament', ot: 'Old Testament' },
+      askPlaceholder: 'What is the question you carry?',
+      askButton: 'Find an answer',
+      asking: 'Searching…',
+      answerIntro: 'Scripture answers you here:',
+      askAria: 'Ask a question',
     },
   },
 }

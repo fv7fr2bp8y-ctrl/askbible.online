@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { passages } from './data/passages'
 import { assetUrl } from './lib/asset'
 import { useI18n } from './lib/i18n'
 import { speak, stopSpeech, prewarm, getVoice, setVoice, VOICES, TTS_ENABLED } from './lib/tts'
+import { findAnswer, ASK_ENABLED } from './lib/ask'
 import type { Passage, PassageCategory } from './types'
 
 type Filter = PassageCategory | 'all'
@@ -33,12 +34,16 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
   const [showContext, setShowContext] = useState(false)
   const [showSaved, setShowSaved] = useState(false)
   const [voice, setVoiceState] = useState<string>(() => getVoice())
+  const [question, setQuestion] = useState('')
+  const [asking, setAsking] = useState(false)
+  const [answered, setAnswered] = useState(false)
 
   const draw = useCallback(
     (f: Filter) => {
       const next = f === 'all' ? passages : passages.filter((p) => p.category === f)
       setCurrent(pickRandom(next, current?.id))
       setShowContext(false)
+      setAnswered(false)
     },
     [current],
   )
@@ -46,6 +51,21 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
   function chooseCategory(f: Filter) {
     setFilter(f)
     draw(f)
+  }
+
+  async function askQuestion(e: FormEvent) {
+    e.preventDefault()
+    const q = question.trim()
+    if (!q || asking) return
+    setAsking(true)
+    try {
+      const match = await findAnswer(q, passages, lang)
+      setCurrent(match)
+      setAnswered(true)
+      setShowContext(false)
+    } finally {
+      setAsking(false)
+    }
   }
 
   useEffect(() => {
@@ -86,6 +106,22 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
         <p className="tagline">{b.tagline}</p>
       </header>
 
+      {ASK_ENABLED && (
+        <form className="ask" onSubmit={askQuestion}>
+          <input
+            className="ask-input"
+            type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder={b.askPlaceholder}
+            aria-label={b.askAria}
+          />
+          <button className="ask-btn" type="submit" disabled={asking || !question.trim()}>
+            {asking ? b.asking : b.askButton}
+          </button>
+        </form>
+      )}
+
       <nav className="chips" aria-label={t.categories}>
         <button className={`chip${filter === 'all' ? ' is-active' : ''}`} onClick={() => chooseCategory('all')}>
           {b.surprise}
@@ -98,7 +134,7 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
       </nav>
 
       <section className="passage">
-        <p className="passage-intro">{b.openedHere}</p>
+        <p className="passage-intro">{answered ? b.answerIntro : b.openedHere}</p>
         <blockquote className="passage-text">{text}</blockquote>
         <p className="passage-ref">{ref}</p>
 
@@ -153,6 +189,7 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
             setCurrent(p)
             setShowSaved(false)
             setShowContext(false)
+            setAnswered(false)
           }}
           onRemove={toggleSave}
           title={b.savedTitle}

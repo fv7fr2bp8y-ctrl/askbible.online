@@ -3,9 +3,10 @@
  *
  * Ключът идва от build env (VITE_TTS_API_KEY), подаден от GitHub Secret — стои
  * само в готовия сайт (referrer-ограничен, като ключ на Google Maps), не в git.
- * Ако липсва ключ или заявката се провали — пада на браузърния SpeechSynthesis.
  */
-const KEY = import.meta.env.VITE_TTS_API_KEY as string | undefined
+import { GEMINI_API_KEY, GEMINI_AVAILABLE } from './gemini'
+
+const KEY = GEMINI_API_KEY
 const MODEL = (import.meta.env.VITE_TTS_MODEL as string | undefined) ?? 'gemini-2.5-flash-preview-tts'
 const DEFAULT_VOICE = (import.meta.env.VITE_TTS_VOICE as string | undefined) ?? 'Schedar'
 
@@ -32,7 +33,7 @@ try {
 }
 
 /** Дали гласът е наличен (ключът е подаден при билд). */
-export const TTS_ENABLED = !!(KEY && KEY.length > 8)
+export const TTS_ENABLED = GEMINI_AVAILABLE
 
 export function getVoice(): string {
   return voiceName
