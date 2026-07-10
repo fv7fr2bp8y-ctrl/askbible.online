@@ -138,26 +138,8 @@ for (const [book, ch, v1, v2, category] of REFS) {
   })
 }
 
-// Контекст: пълната глава (BG+EN) за всяка препратка — за „Прочети контекста".
-const context = {}
-for (const { book, chapter } of passages) {
-  const key = `${book}.${chapter}`
-  if (context[key]) continue
-  const meta = BOOKS[book]
-  const bg = []
-  const en = []
-  for (let v = 1; v <= 200; v++) {
-    const b = bgVerse(book, chapter, v)
-    const e = enVerse(meta.usfx, chapter, v)
-    if (!b && !e) break
-    bg.push({ v, text: b })
-    en.push({ v, text: e })
-  }
-  context[key] = { refBg: meta.bg + ' ' + chapter, refEn: meta.en + ' ' + chapter, bg, en }
-}
-mkdirSync(new URL('../public/', import.meta.url), { recursive: true })
-writeFileSync(new URL('../public/bible-context.json', import.meta.url), JSON.stringify(context))
-console.log(`Контекст: ${Object.keys(context).length} глави в public/bible-context.json`)
+// Забележка: пълният контекст на главите вече се взима от public/bible/<book>.json
+// (генериран от scripts/gen-bible-full.mjs), не се генерира тук.
 
 const out = `import type { Passage } from '../types'
 

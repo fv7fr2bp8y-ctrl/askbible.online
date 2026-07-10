@@ -40,8 +40,9 @@ export default defineConfig(() => {
         ],
       },
       workbox: {
-        // Библейското аудио не се прекешира (много файлове) — само при поискване.
-        globIgnores: ['**/audio-bible/**'],
+        // Библейското аудио и пълният библейски текст (66 файла, ~11MB) не се
+        // прекешират предварително — само при поискване.
+        globIgnores: ['**/audio-bible/**', '**/bible/**'],
         // Аудио файловете могат да са големи — кешираме ги при поискване.
         runtimeCaching: [
           {
@@ -59,6 +60,14 @@ export default defineConfig(() => {
             options: {
               cacheName: 'bible-audio',
               expiration: { maxEntries: 200 },
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/bible/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'bible-text',
+              expiration: { maxEntries: 70 },
             },
           },
         ],

@@ -232,32 +232,37 @@ function ListenButton({ text, lang, listen, stop }: { text: string; lang: 'bg' |
   )
 }
 
-interface ContextData {
-  refBg: string
-  refEn: string
-  bg: { v: number; text: string }[]
-  en: { v: number; text: string }[]
+interface BookFile {
+  bg: string
+  en: string
+  t: 'OT' | 'NT'
+  chapters: Record<string, Record<string, [string, string]>>
 }
 
 function ContextModal({ passage, lang, onClose, closeLabel }: { passage: Passage; lang: string; onClose: () => void; closeLabel: string }) {
-  const [data, setData] = useState<ContextData | null>(null)
-  const key = `${passage.book}.${passage.chapter}`
+  const [data, setData] = useState<BookFile | null>(null)
 
   useEffect(() => {
     let alive = true
-    fetch(assetUrl('/bible-context.json'))
+    fetch(assetUrl(`/bible/${passage.book}.json`))
       .then((r) => r.json())
-      .then((all) => {
-        if (alive) setData(all[key] ?? null)
+      .then((d) => {
+        if (alive) setData(d)
       })
       .catch(() => {})
     return () => {
       alive = false
     }
-  }, [key])
+  }, [passage.book])
 
-  const verses = data ? (lang === 'bg' ? data.bg : data.en) : []
-  const ref = data ? (lang === 'bg' ? data.refBg : data.refEn) : ''
+  const chapterVerses = data?.chapters[String(passage.chapter)] ?? null
+  const verses = chapterVerses
+    ? Object.keys(chapterVerses)
+        .map(Number)
+        .sort((a, b) => a - b)
+        .map((v) => ({ v, text: chapterVerses[String(v)][lang === 'bg' ? 0 : 1] }))
+    : []
+  const ref = data ? `${lang === 'bg' ? data.bg : data.en} ${passage.chapter}` : ''
 
   return (
     <div className="modal" role="dialog" aria-modal onClick={onClose}>
