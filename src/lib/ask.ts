@@ -2,7 +2,7 @@ import { GEMINI_API_KEY, GEMINI_AVAILABLE } from './gemini'
 import { assetUrl } from './asset'
 import type { Passage, PassageCategory } from '../types'
 
-const MODEL = 'gemini-2.5-flash'
+const MODEL = 'gemini-flash-latest'
 
 export const ASK_ENABLED = GEMINI_AVAILABLE
 
