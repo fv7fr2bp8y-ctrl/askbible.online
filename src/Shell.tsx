@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { PoetryApp } from './App'
 import { BibleApp } from './BibleApp'
 import { Landing } from './Landing'
 
-type Mode = 'bible' | 'poetry'
-const MODE_KEY = 'app-mode'
 const SEEN_LANDING_KEY = 'seen-landing'
 
 function isStandalonePwa(): boolean {
   return typeof window !== 'undefined' && window.matchMedia?.('(display-mode: standalone)').matches
 }
 
+/** Споделен линк за стих (/?stih=…) — отваря направо „Тих Стих". */
+function hasSharedPoemLink(): boolean {
+  return typeof window !== 'undefined' && !!new URLSearchParams(window.location.search).get('stih')
+}
+
 function initialShowLanding(): boolean {
   if (typeof window === 'undefined') return false
-  // Директен линк за стих или инсталирано приложение — направо в него, без landing.
-  if (new URLSearchParams(window.location.search).get('stih')) return false
+  if (hasSharedPoemLink()) return false
   if (isStandalonePwa()) return false
   try {
     if (localStorage.getItem(SEEN_LANDING_KEY) === '1') return false
@@ -24,31 +26,10 @@ function initialShowLanding(): boolean {
   return true
 }
 
-function initialMode(): Mode {
-  // Споделен линк за стих (/?stih=…) отваря направо „Тих Стих".
-  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('stih')) {
-    return 'poetry'
-  }
-  try {
-    const saved = localStorage.getItem(MODE_KEY)
-    if (saved === 'bible' || saved === 'poetry') return saved
-  } catch {
-    /* ignore */
-  }
-  return 'bible'
-}
-
+// „Тих Стих" и „Писание" са отделни продукти — без взаимна навигация. Писание
+// е основното приложение; стихове се отварят само през пряк споделен линк.
 export default function Shell() {
   const [showLanding, setShowLanding] = useState(initialShowLanding)
-  const [mode, setMode] = useState<Mode>(initialMode)
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(MODE_KEY, mode)
-    } catch {
-      /* ignore */
-    }
-  }, [mode])
 
   function enterApp() {
     try {
@@ -63,9 +44,5 @@ export default function Shell() {
     return <Landing onEnterApp={enterApp} />
   }
 
-  return mode === 'bible' ? (
-    <BibleApp onToPoetry={() => setMode('poetry')} />
-  ) : (
-    <PoetryApp onToBible={() => setMode('bible')} />
-  )
+  return hasSharedPoemLink() ? <PoetryApp /> : <BibleApp />
 }

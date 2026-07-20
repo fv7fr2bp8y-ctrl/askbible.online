@@ -14,7 +14,7 @@ interface PoemEntry {
   categoryTitle: string
 }
 
-export function PoetryApp({ onToBible }: { onToBible?: () => void }) {
+export function PoetryApp() {
   const { t, lang, toggle, albumTitle } = useI18n()
   const player = useAudioPlayer()
   const [query, setQuery] = useState('')
@@ -77,11 +77,6 @@ export function PoetryApp({ onToBible }: { onToBible?: () => void }) {
         <div className="brand-row">
           <img className="brand-logo" src={assetUrl('/logo.svg')} alt="" aria-hidden width={44} height={44} />
           <h1 className="brand">Тих Стих</h1>
-          {onToBible && (
-            <button className="lang-toggle" onClick={onToBible}>
-              {t.bible.toBible} ↗
-            </button>
-          )}
           <button
             className="lang-toggle"
             onClick={toggle}

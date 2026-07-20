@@ -19,7 +19,7 @@ function pickRandom(pool: Passage[], notId?: string): Passage | null {
   return p
 }
 
-export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
+export function BibleApp() {
   const { t, lang, toggle } = useI18n()
   const b = t.bible
   const [filter, setFilter] = useState<Filter>('all')
@@ -180,7 +180,6 @@ export function BibleApp({ onToPoetry }: { onToPoetry: () => void }) {
         <button className="text-btn" onClick={() => setShowSaved(true)}>
           ♡ {b.savedTitle}{saved.length ? ` (${saved.length})` : ''}
         </button>
-        <button className="text-btn" onClick={onToPoetry}>{b.toPoetry} ↗</button>
       </div>
 
       {showContext && <ContextModal passage={current} lang={lang} onClose={() => setShowContext(false)} closeLabel={b.close} />}

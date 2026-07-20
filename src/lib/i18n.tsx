@@ -33,8 +33,6 @@ export interface Strings {
     stop: string
     openAgain: string
     surprise: string
-    toPoetry: string
-    toBible: string
     close: string
     savedTitle: string
     noSaved: string
@@ -82,8 +80,6 @@ const STRINGS: Record<Lang, Strings> = {
       stop: 'Спри',
       openAgain: 'Отвори отново',
       surprise: 'Изненадай ме',
-      toPoetry: 'Тих Стих',
-      toBible: 'Писание',
       close: 'Затвори',
       savedTitle: 'Запазени',
       noSaved: 'Още нямаш запазени откъси.',
@@ -129,8 +125,6 @@ const STRINGS: Record<Lang, Strings> = {
       stop: 'Stop',
       openAgain: 'Open again',
       surprise: 'Surprise me',
-      toPoetry: 'Tih Stih',
-      toBible: 'Scripture',
       close: 'Close',
       savedTitle: 'Saved',
       noSaved: 'You have no saved passages yet.',
