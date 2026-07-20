@@ -101,7 +101,7 @@ export function BibleApp() {
     <div className="app bible">
       <header className="header">
         <div className="brand-row">
-          <img className="brand-logo" src={assetUrl('/logo.svg')} alt="" aria-hidden width={44} height={44} />
+          <img className="brand-logo" src={assetUrl('/favicon.svg')} alt="" aria-hidden width={44} height={44} />
           <h1 className="brand">{b.title}</h1>
           <button className="lang-toggle" onClick={toggle} aria-label={lang === 'bg' ? 'Switch to English' : 'Превключи на български'}>
             {t.langName}

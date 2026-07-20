@@ -14,11 +14,11 @@ export default defineConfig(() => {
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'logo.svg', 'robots.txt'],
+      includeAssets: ['favicon.svg', 'logo.svg', 'logo-emblem.png', 'robots.txt'],
       manifest: {
-        name: 'Тих Стих',
-        short_name: 'Тих Стих',
-        description: 'Записани стихове — слушай, чети и споделяй.',
+        name: 'Попитай Библията',
+        short_name: 'Попитай Библията',
+        description: 'Задай въпрос и получи библейски стих в отговор.',
         lang: 'bg',
         theme_color: '#14100c',
         background_color: '#14100c',
@@ -27,15 +27,15 @@ export default defineConfig(() => {
         scope: base,
         icons: [
           {
-            src: 'logo.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
+            src: 'logo-emblem.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'any',
           },
           {
-            src: 'logo.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
+            src: 'logo-emblem.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'maskable',
           },
         ],
