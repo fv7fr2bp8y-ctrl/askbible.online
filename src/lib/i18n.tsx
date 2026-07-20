@@ -21,31 +21,6 @@ export interface Strings {
   medium: string
   long: string
   langName: string
-  bible: {
-    title: string
-    tagline: string
-    openedHere: string
-    readContext: string
-    save: string
-    saved: string
-    unsave: string
-    listen: string
-    stop: string
-    openAgain: string
-    surprise: string
-    close: string
-    savedTitle: string
-    noSaved: string
-    voice: string
-    male: string
-    female: string
-    cats: { gospels: string; psalms: string; proverbs: string; nt: string; ot: string }
-    askPlaceholder: string
-    askButton: string
-    asking: string
-    answerIntro: string
-    askAria: string
-  }
 }
 
 const STRINGS: Record<Lang, Strings> = {
@@ -68,31 +43,6 @@ const STRINGS: Record<Lang, Strings> = {
     medium: 'Средно',
     long: 'Дълго',
     langName: 'EN',
-    bible: {
-      title: 'Писание',
-      tagline: 'Кратък откъс от Писанието за въпроса, който носиш в себе си.',
-      openedHere: 'Писанието се отвори тук:',
-      readContext: 'Прочети контекста',
-      save: 'Запази',
-      saved: 'Запазено',
-      unsave: 'Премахни',
-      listen: 'Чуй',
-      stop: 'Спри',
-      openAgain: 'Отвори отново',
-      surprise: 'Изненадай ме',
-      close: 'Затвори',
-      savedTitle: 'Запазени',
-      noSaved: 'Още нямаш запазени откъси.',
-      voice: 'Глас',
-      male: 'мъжки',
-      female: 'женски',
-      cats: { gospels: 'Евангелия', psalms: 'Псалми', proverbs: 'Притчи', nt: 'Нов Завет', ot: 'Стар Завет' },
-      askPlaceholder: 'Какъв е въпросът, който носиш в себе си?',
-      askButton: 'Намери отговор',
-      asking: 'Търся…',
-      answerIntro: 'Писанието ти отговаря тук:',
-      askAria: 'Задай въпрос',
-    },
   },
   en: {
     tagline: 'A daily dose of poetry against the noise of the world',
@@ -113,31 +63,6 @@ const STRINGS: Record<Lang, Strings> = {
     medium: 'Medium',
     long: 'Long',
     langName: 'БГ',
-    bible: {
-      title: 'Scripture',
-      tagline: 'A short passage from the Bible for the question you carry.',
-      openedHere: 'The Scripture opened here:',
-      readContext: 'Read the context',
-      save: 'Save',
-      saved: 'Saved',
-      unsave: 'Remove',
-      listen: 'Listen',
-      stop: 'Stop',
-      openAgain: 'Open again',
-      surprise: 'Surprise me',
-      close: 'Close',
-      savedTitle: 'Saved',
-      noSaved: 'You have no saved passages yet.',
-      voice: 'Voice',
-      male: 'male',
-      female: 'female',
-      cats: { gospels: 'Gospels', psalms: 'Psalms', proverbs: 'Proverbs', nt: 'New Testament', ot: 'Old Testament' },
-      askPlaceholder: 'What is the question you carry?',
-      askButton: 'Find an answer',
-      asking: 'Searching…',
-      answerIntro: 'Scripture answers you here:',
-      askAria: 'Ask a question',
-    },
   },
 }
 

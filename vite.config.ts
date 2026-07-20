@@ -4,8 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig(() => {
-  // Хоства се на собствен домейн askbible.online (GitHub Pages), от корена → base "/".
-  // (tihstih.eu остава като вторичен домейн — виж README.)
+  // Хоства се на собствен домейн tihstih.eu (GitHub Pages), от корена → base "/".
   const base = '/'
 
   return {
@@ -41,9 +40,6 @@ export default defineConfig(() => {
         ],
       },
       workbox: {
-        // Библейското аудио и пълният библейски текст (66 файла, ~11MB) не се
-        // прекешират предварително — само при поискване.
-        globIgnores: ['**/audio-bible/**', '**/bible/**'],
         // Аудио файловете могат да са големи — кешираме ги при поискване.
         runtimeCaching: [
           {
@@ -53,22 +49,6 @@ export default defineConfig(() => {
               cacheName: 'tihstih-audio',
               expiration: { maxEntries: 60 },
               rangeRequests: true,
-            },
-          },
-          {
-            urlPattern: ({ url }) => url.pathname.includes('/audio-bible/'),
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'bible-audio',
-              expiration: { maxEntries: 200 },
-            },
-          },
-          {
-            urlPattern: ({ url }) => url.pathname.includes('/bible/'),
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'bible-text',
-              expiration: { maxEntries: 70 },
             },
           },
         ],

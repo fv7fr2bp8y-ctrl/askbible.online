@@ -31,25 +31,3 @@ export interface Album {
   /** Стиховете в този албум. */
   poems: Poem[]
 }
-
-/** Категория на библейски откъс. */
-export type PassageCategory = 'gospels' | 'psalms' | 'proverbs' | 'nt' | 'ot'
-
-/** Подбран „завършен" откъс от Писанието, двуезичен. */
-export interface Passage {
-  id: string
-  category: PassageCategory
-  /** Препратка на български, напр. „Матей 6:34". */
-  refBg: string
-  /** Препратка на английски, напр. „Matthew 6:34". */
-  refEn: string
-  /** OSIS код на книгата (за зареждане на контекста). */
-  book: string
-  chapter: number
-  verseStart: number
-  verseEnd: number
-  /** Текст на български. */
-  bg: string
-  /** Текст на английски. */
-  en: string
-}

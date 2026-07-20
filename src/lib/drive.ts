@@ -8,8 +8,7 @@
  *
  * Ключът е публичен (client-side) — ограничи го в Google Cloud до:
  *   - API: само "Google Drive API"
- *   - HTTP referrers: https://askbible.online/*, https://www.askbible.online/*,
- *     https://tihstih.eu/*, https://www.tihstih.eu/*
+ *   - HTTP referrers: https://tihstih.eu/*, https://www.tihstih.eu/*
  *
  * Може да се подаде и при билд чрез VITE_DRIVE_API_KEY.
  */
