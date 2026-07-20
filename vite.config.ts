@@ -4,7 +4,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig(() => {
-  // Хоства се на собствен домейн tihstih.eu (GitHub Pages), от корена → base "/".
+  // Хоства се на собствен домейн askbible.online (GitHub Pages), от корена → base "/".
+  // (tihstih.eu остава като вторичен домейн — виж README.)
   const base = '/'
 
   return {
