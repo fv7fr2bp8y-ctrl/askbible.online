@@ -34,9 +34,6 @@ jobs:
 
       - name: Билд
         run: npm run build
-        env:
-          # Подава се от GitHub Secret — стои само в готовия сайт, не в кода/git.
-          VITE_TTS_API_KEY: ${{ secrets.VITE_TTS_API_KEY }}
 
       - name: Настройка на Pages
         uses: actions/configure-pages@v5
