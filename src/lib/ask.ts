@@ -54,7 +54,10 @@ const PROMPT: Record<'bg' | 'en', string> = {
     'е повод да откриеш тази по-дълбока нужда — не отговаряй буквално на въпроса. Избери ' +
     'РЕАЛЕН, добре известен библейски стих (или до 4 последователни стиха), който говори ' +
     'именно на тази по-дълбока нужда. Използвай ТОЧНО един "code" от списъка с книги. ' +
-    'Върни само JSON: {"code":"<code>","chapter":<число>,"verseStart":<число>,"verseEnd":<число>}\n\n' +
+    'Добави и кратък, топъл размисъл (1-2 изречения, на "ти", без да цитираш стиха отново) ' +
+    'за това как човекът да приложи стиха в момента си — на български и на английски. ' +
+    'Върни само JSON: {"code":"<code>","chapter":<число>,"verseStart":<число>,"verseEnd":<число>,' +
+    '"reflectionBg":"<кратък размисъл на български>","reflectionEn":"<same reflection in English>"}\n\n' +
     'Книги (code: българско име):\n',
   en:
     'A person shares a question, worry, or feeling with you. Do NOT look for literal word ' +
@@ -64,11 +67,23 @@ const PROMPT: Record<'bg' | 'en', string> = {
     'or mundane question is an occasion to find that deeper need — do not answer the question ' +
     'literally. Choose a REAL, well-known Bible verse (or up to 4 consecutive verses) that ' +
     'speaks to that deeper need. Use EXACTLY one "code" from the book list. ' +
-    'Return only JSON: {"code":"<code>","chapter":<number>,"verseStart":<number>,"verseEnd":<number>}\n\n' +
+    'Also add a short, warm reflection (1-2 sentences, addressed to "you", without quoting the ' +
+    'verse again) on how the person can carry it into this moment — in Bulgarian and English. ' +
+    'Return only JSON: {"code":"<code>","chapter":<number>,"verseStart":<number>,"verseEnd":<number>,' +
+    '"reflectionBg":"<same reflection in Bulgarian>","reflectionEn":"<short reflection in English>"}\n\n' +
     'Books (code: English name):\n',
 }
 
-async function askGemini(question: string, lang: 'bg' | 'en'): Promise<{ code: string; chapter: number; verseStart: number; verseEnd: number } | null> {
+interface GeminiRef {
+  code: string
+  chapter: number
+  verseStart: number
+  verseEnd: number
+  reflectionBg?: string
+  reflectionEn?: string
+}
+
+async function askGemini(question: string, lang: 'bg' | 'en'): Promise<GeminiRef | null> {
   if (!GEMINI_API_KEY) return null
   const books = await loadManifest()
   const list = books.map((b) => `${b.code}: ${lang === 'bg' ? b.bg : b.en}`).join('\n')
@@ -98,6 +113,8 @@ async function askGemini(question: string, lang: 'bg' | 'en'): Promise<{ code: s
       chapter: Number(parsed.chapter),
       verseStart: Number(parsed.verseStart),
       verseEnd: Number(parsed.verseEnd) || Number(parsed.verseStart),
+      reflectionBg: typeof parsed.reflectionBg === 'string' ? parsed.reflectionBg : undefined,
+      reflectionEn: typeof parsed.reflectionEn === 'string' ? parsed.reflectionEn : undefined,
     }
   } catch {
     return null
@@ -105,7 +122,7 @@ async function askGemini(question: string, lang: 'bg' | 'en'): Promise<{ code: s
 }
 
 /** Проверява предложената препратка срещу реалния текст и връща Passage, ако е валидна. */
-async function resolveReference(ref: { code: string; chapter: number; verseStart: number; verseEnd: number }): Promise<Passage | null> {
+async function resolveReference(ref: GeminiRef): Promise<Passage | null> {
   const book = await loadBook(ref.code)
   if (!book) return null
   const chapterVerses = book.chapters[String(ref.chapter)]
@@ -134,6 +151,8 @@ async function resolveReference(ref: { code: string; chapter: number; verseStart
     verseEnd: v2,
     bg: bgParts.join(' '),
     en: enParts.join(' '),
+    reflection:
+      ref.reflectionBg && ref.reflectionEn ? { bg: ref.reflectionBg, en: ref.reflectionEn } : undefined,
   }
 }
 

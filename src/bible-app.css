@@ -1,0 +1,303 @@
+/**
+ * Ask the Bible — самото приложение (начало / отговор / категории / долна навигация).
+ * Дизайн от Claude Design ("Ask the Bible Mobile"). Дели палитра и типография
+ * с landing.css (lp-* класове се преизползват тук за eyebrow/divider/lang/cat-card).
+ */
+@keyframes baFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes baBeam {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+@keyframes baRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ba-shell {
+  position: relative;
+  min-height: 100dvh;
+  max-width: 520px;
+  margin: 0 auto;
+  background: radial-gradient(130% 60% at 50% 6%, #221910 0%, #14100c 58%, #0d0a06 100%);
+  font-family: 'Geist', var(--ui-font);
+  color: #f3e9d7;
+  display: flex;
+  flex-direction: column;
+}
+.ba-shell a { color: #e8c98a; text-decoration: none; }
+.ba-shell ::selection { background: rgba(215, 176, 108, 0.3); }
+
+/* Top bar */
+.ba-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 6px;
+  flex-shrink: 0;
+  min-height: 44px;
+}
+.ba-topbar-left { min-width: 64px; display: flex; }
+.ba-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #d7b06c;
+  font-family: 'Geist', var(--ui-font);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 4px 8px 0;
+}
+
+/* Body / screen transition */
+.ba-body { flex: 1; position: relative; }
+.ba-screen { animation: baRise 0.4s ease-out; padding: 0 22px 24px; }
+
+/* Home */
+.ba-home { position: relative; display: flex; flex-direction: column; }
+.ba-home-beam {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 260px;
+  background: linear-gradient(180deg, rgba(255, 232, 178, 0.9), rgba(215, 176, 108, 0));
+  filter: blur(1px);
+  animation: baBeam 5s ease-in-out infinite;
+}
+.ba-home-glow {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(340px, 90%);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(215, 176, 108, 0.22), transparent 70%);
+  filter: blur(20px);
+}
+.ba-home-head {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 22px;
+}
+.ba-emblem {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  box-shadow: 0 0 44px rgba(215, 176, 108, 0.42);
+  animation: baFloat 6s ease-in-out infinite;
+}
+.ba-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #a88b5f;
+  margin-top: 26px;
+}
+.ba-title {
+  font-family: 'Cormorant', serif;
+  font-weight: 700;
+  line-height: 0.94;
+  margin: 10px 0 0;
+  font-size: clamp(40px, 15vw, 58px);
+  background: linear-gradient(180deg, #fbf3e1 0%, #e8c98a 45%, #c98a4a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.ba-divider { position: relative; display: flex; align-items: center; gap: 12px; margin: 18px 0 6px; color: #8a7455; }
+.ba-divider-line { width: 44px; height: 1px; background: linear-gradient(90deg, transparent, #8a7455); }
+.ba-divider-line.is-right { background: linear-gradient(90deg, #8a7455, transparent); }
+.ba-divider-mark { color: #d7b06c; font-size: 12px; }
+.ba-tagline {
+  position: relative;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 20px;
+  color: #cdbfa5;
+  margin: 2px 0 0;
+  max-width: 270px;
+}
+
+.ba-ask-block { margin-top: auto; padding-top: 32px; }
+.ba-ask-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(30, 23, 14, 0.7);
+  border: 1px solid rgba(215, 176, 108, 0.28);
+  border-radius: 22px;
+  padding: 4px 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 40px rgba(215, 176, 108, 0.1);
+}
+.ba-ask-card svg { flex-shrink: 0; color: #d7b06c; }
+.ba-ask-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  color: #f3e9d7;
+  font-family: 'Geist', var(--ui-font);
+  font-size: 15px;
+  padding: 14px 0;
+}
+.ba-ask-input::placeholder { color: #7d6a4c; }
+
+.ba-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 2px 0; }
+.ba-chip {
+  font-family: 'Geist', var(--ui-font);
+  font-size: 12.5px;
+  color: #cdbfa5;
+  background: rgba(215, 176, 108, 0.08);
+  border: 1px solid rgba(215, 176, 108, 0.2);
+  border-radius: 999px;
+  padding: 8px 13px;
+  cursor: pointer;
+}
+.ba-chip:disabled { opacity: 0.5; cursor: default; }
+
+.ba-cta {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  border: none;
+  border-radius: 18px;
+  padding: 17px;
+  font-family: 'Geist', var(--ui-font);
+  font-weight: 600;
+  font-size: 16px;
+  color: #1a1206;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f0d193, #d7b06c 55%, #c98a4a);
+  box-shadow: 0 12px 34px rgba(201, 138, 74, 0.4);
+  letter-spacing: 0.02em;
+}
+.ba-cta:disabled { opacity: 0.6; cursor: default; }
+
+/* Answer */
+.ba-question-row { display: flex; justify-content: flex-end; margin-bottom: 22px; }
+.ba-question-bubble {
+  max-width: 82%;
+  background: linear-gradient(135deg, rgba(215, 176, 108, 0.18), rgba(201, 138, 74, 0.12));
+  border: 1px solid rgba(215, 176, 108, 0.3);
+  border-radius: 18px 18px 4px 18px;
+  padding: 12px 15px;
+  color: #f3e9d7;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.ba-verse-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(36, 27, 16, 0.85), rgba(20, 16, 12, 0.85));
+  border: 1px solid rgba(215, 176, 108, 0.3);
+  border-radius: 24px;
+  padding: 26px 22px;
+  box-shadow: 0 0 50px rgba(215, 176, 108, 0.12);
+  overflow: hidden;
+}
+.ba-verse-glow {
+  position: absolute;
+  top: -30px;
+  right: -20px;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(215, 176, 108, 0.25), transparent 70%);
+  filter: blur(14px);
+}
+.ba-verse-ref-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #d7b06c;
+  margin-bottom: 14px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ba-verse-ref { font-family: 'Cormorant', serif; font-size: 17px; font-weight: 600; letter-spacing: 0.03em; }
+.ba-verse-text {
+  position: relative;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 23px;
+  line-height: 1.5;
+  color: #fbf3e1;
+  margin: 0;
+}
+.ba-reflection-label {
+  margin-top: 22px;
+  color: #a88b5f;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ba-reflection-text { color: #cdbfa5; font-size: 15px; line-height: 1.7; margin: 0; }
+
+.ba-actions { display: flex; gap: 10px; margin-top: 24px; }
+.ba-action {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border: 1px solid rgba(215, 176, 108, 0.2);
+  background: transparent;
+  border-radius: 16px;
+  color: #cdbfa5;
+  font-family: 'Geist', var(--ui-font);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.ba-action svg { color: #d7b06c; }
+.ba-action.is-on { color: #f0d193; border-color: rgba(215, 176, 108, 0.5); background: rgba(215, 176, 108, 0.08); }
+
+/* Categories */
+.ba-cats .lp-section-title { margin: 6px 0 20px; }
+.ba-cats-list { display: flex; flex-direction: column; gap: 14px; }
+.ba-cat-text { flex: 1; }
+.ba-cat-chevron { flex-shrink: 0; color: #8a7455; }
+
+/* Bottom nav */
+.ba-navbar {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 12px 20px calc(18px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, #0d0a06 40%);
+  border-top: 1px solid rgba(215, 176, 108, 0.12);
+}
+.ba-nav-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Geist', var(--ui-font);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  color: #6f5d42;
+  font-weight: 400;
+}
+.ba-nav-btn.is-active { color: #d7b06c; font-weight: 600; }
+
+@media (max-width: 360px) {
+  .ba-title { font-size: clamp(36px, 15vw, 48px); }
+  .ba-verse-text { font-size: 20px; }
+}

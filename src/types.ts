@@ -52,4 +52,6 @@ export interface Passage {
   bg: string
   /** Текст на английски. */
   en: string
+  /** Кратък размисъл (само при отговор на въпрос — от Gemini). */
+  reflection?: { bg: string; en: string }
 }

@@ -40,11 +40,27 @@ export interface Strings {
     male: string
     female: string
     cats: { gospels: string; psalms: string; proverbs: string; nt: string; ot: string }
+    catsDesc: { gospels: string; psalms: string; proverbs: string; nt: string; ot: string }
     askPlaceholder: string
     askButton: string
     asking: string
     answerIntro: string
     askAria: string
+    eyebrow: string
+    title1: string
+    title2: string
+    chip1: string
+    chip2: string
+    chip3: string
+    back: string
+    navHome: string
+    navCats: string
+    reflectionLabel: string
+    actCopy: string
+    actShare: string
+    askAnother: string
+    catsEyebrow: string
+    catsTitle: string
   }
 }
 
@@ -86,12 +102,34 @@ const STRINGS: Record<Lang, Strings> = {
       voice: 'Глас',
       male: 'мъжки',
       female: 'женски',
-      cats: { gospels: 'Евангелия', psalms: 'Псалми', proverbs: 'Притчи', nt: 'Нов Завет', ot: 'Стар Завет' },
+      cats: { gospels: 'Евангелия', psalms: 'Псалми', proverbs: 'Притчи', nt: 'Послания', ot: 'Пророци' },
+      catsDesc: {
+        gospels: 'Животът и словата на Христос',
+        psalms: 'Молитви, хваление и утеха',
+        proverbs: 'Мъдрост за всекидневието',
+        nt: 'Напътствия за живата вяра',
+        ot: 'Обещания и надежда',
+      },
       askPlaceholder: 'Какъв е въпросът, който носиш в себе си?',
       askButton: 'Намери отговор',
       asking: 'Търся…',
       answerIntro: 'Писанието ти отговаря тук:',
       askAria: 'Задай въпрос',
+      eyebrow: 'ЗАДАЙ СВОЯ ВЪПРОС',
+      title1: 'ПОПИТАЙ',
+      title2: 'БИБЛИЯТА!',
+      chip1: 'Как да намеря мир?',
+      chip2: 'Стих за трудни дни',
+      chip3: 'Прошка',
+      back: 'Назад',
+      navHome: 'Начало',
+      navCats: 'Категории',
+      reflectionLabel: 'Размисъл',
+      actCopy: 'Копирай',
+      actShare: 'Сподели',
+      askAnother: 'Задай нов въпрос',
+      catsEyebrow: 'РАЗГЛЕДАЙ',
+      catsTitle: 'Категории',
     },
   },
   en: {
@@ -131,12 +169,34 @@ const STRINGS: Record<Lang, Strings> = {
       voice: 'Voice',
       male: 'male',
       female: 'female',
-      cats: { gospels: 'Gospels', psalms: 'Psalms', proverbs: 'Proverbs', nt: 'New Testament', ot: 'Old Testament' },
+      cats: { gospels: 'Gospels', psalms: 'Psalms', proverbs: 'Proverbs', nt: 'Epistles', ot: 'Prophets' },
+      catsDesc: {
+        gospels: 'The life and words of Christ',
+        psalms: 'Prayers, praise and comfort',
+        proverbs: 'Wisdom for everyday life',
+        nt: 'Guidance for living faith',
+        ot: 'Promises and hope',
+      },
       askPlaceholder: 'What is the question you carry?',
       askButton: 'Find an answer',
       asking: 'Searching…',
       answerIntro: 'Scripture answers you here:',
       askAria: 'Ask a question',
+      eyebrow: 'ASK YOUR QUESTION',
+      title1: 'ASK',
+      title2: 'THE BIBLE!',
+      chip1: 'How do I find peace?',
+      chip2: 'Verse for hard days',
+      chip3: 'Forgiveness',
+      back: 'Back',
+      navHome: 'Home',
+      navCats: 'Categories',
+      reflectionLabel: 'Reflection',
+      actCopy: 'Copy',
+      actShare: 'Share',
+      askAnother: 'Ask another question',
+      catsEyebrow: 'EXPLORE',
+      catsTitle: 'Categories',
     },
   },
 }
