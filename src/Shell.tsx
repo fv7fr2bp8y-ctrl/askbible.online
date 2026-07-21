@@ -9,6 +9,12 @@ function isStandalonePwa(): boolean {
   return typeof window !== 'undefined' && window.matchMedia?.('(display-mode: standalone)').matches
 }
 
+/** Телефон/тесен екран — самото приложение вече е мобилен дизайн, затова
+ *  landing-а (маркетинг страница) е излишен и само дублира началния екран. */
+function isMobile(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia?.('(max-width: 640px)').matches
+}
+
 /** Споделен линк за стих (/?stih=…) — отваря направо „Тих Стих". */
 function hasSharedPoemLink(): boolean {
   return typeof window !== 'undefined' && !!new URLSearchParams(window.location.search).get('stih')
@@ -18,6 +24,7 @@ function initialShowLanding(): boolean {
   if (typeof window === 'undefined') return false
   if (hasSharedPoemLink()) return false
   if (isStandalonePwa()) return false
+  if (isMobile()) return false
   try {
     if (localStorage.getItem(SEEN_LANDING_KEY) === '1') return false
   } catch {
