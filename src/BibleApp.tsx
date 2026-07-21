@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { passages } from './data/passages'
 import { assetUrl } from './lib/asset'
 import { useI18n } from './lib/i18n'
-import { speak, stopSpeech, prewarm, TTS_ENABLED } from './lib/tts'
+import { speak, stopSpeech, prewarm } from './lib/tts'
 import { findAnswer, ASK_ENABLED } from './lib/ask'
 import { IconBook, IconHarp, IconScroll, IconFlame, IconDove } from './lib/icons'
 import type { Passage, PassageCategory } from './types'
@@ -11,6 +11,9 @@ import './bible-app.css'
 
 type Screen = 'home' | 'answer' | 'cats'
 type Mode = 'ask' | 'browse'
+
+// Временно изключен глас (TTS). За връщане: смени на TTS_ENABLED.
+const VOICE_ENABLED = false
 
 const CAT_ORDER: PassageCategory[] = ['gospels', 'psalms', 'proverbs', 'ot', 'nt']
 const CAT_ICON: Record<PassageCategory, () => JSX.Element> = {
@@ -62,7 +65,7 @@ export function BibleApp() {
 
   // Предварително синтезираме текущия откъс, та „Чуй" да е мигновено.
   useEffect(() => {
-    if (!current || !TTS_ENABLED) return
+    if (!current || !VOICE_ENABLED) return
     const txt = lang === 'bg' ? current.bg : current.en
     const id = setTimeout(() => prewarm(txt, lang), 600)
     return () => clearTimeout(id)
@@ -234,7 +237,7 @@ export function BibleApp() {
             )}
 
             <div className="ba-actions">
-              {TTS_ENABLED && <ListenAction text={text} lang={lang} label={b.listen} stopLabel={b.stop} />}
+              {VOICE_ENABLED && <ListenAction text={text} lang={lang} label={b.listen} stopLabel={b.stop} />}
               <CopyAction text={`„${text}“ — ${ref}`} label={b.actCopy} copiedLabel={t.copied} />
               <ShareAction text={text} verseRef={ref} label={b.actShare} copiedLabel={t.copied} />
               <button className={`ba-action${isSaved ? ' is-on' : ''}`} onClick={() => toggleSave(current.id)}>
