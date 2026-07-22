@@ -220,6 +220,8 @@ export function BibleApp() {
               </div>
             )}
 
+            {mode === 'ask' && current.offline && <div className="ba-offline-note">{b.offlineNote}</div>}
+
             <div className="ba-verse-card">
               <div className="ba-verse-glow" aria-hidden />
               <button className="ba-verse-ref-row" onClick={() => setShowContext(true)}>

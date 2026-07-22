@@ -197,6 +197,17 @@
   font-size: 15px;
   line-height: 1.45;
 }
+.ba-offline-note {
+  margin: -6px 0 16px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(201, 138, 74, 0.1);
+  border: 1px solid rgba(201, 138, 74, 0.32);
+  color: #d9a566;
+  font-size: 12.5px;
+  line-height: 1.4;
+  text-align: center;
+}
 .ba-verse-card {
   position: relative;
   background: linear-gradient(180deg, rgba(36, 27, 16, 0.85), rgba(20, 16, 12, 0.85));

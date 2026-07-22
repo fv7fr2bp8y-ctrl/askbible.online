@@ -61,6 +61,7 @@ export interface Strings {
     askAnother: string
     catsEyebrow: string
     catsTitle: string
+    offlineNote: string
   }
 }
 
@@ -130,6 +131,7 @@ const STRINGS: Record<Lang, Strings> = {
       askAnother: 'Задай нов въпрос',
       catsEyebrow: 'РАЗГЛЕДАЙ',
       catsTitle: 'Категории',
+      offlineNote: '⚠ Офлайн режим — умното търсене не е достъпно сега',
     },
   },
   en: {
@@ -197,6 +199,7 @@ const STRINGS: Record<Lang, Strings> = {
       askAnother: 'Ask another question',
       catsEyebrow: 'EXPLORE',
       catsTitle: 'Categories',
+      offlineNote: '⚠ Offline mode — smart search is unavailable right now',
     },
   },
 }

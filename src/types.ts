@@ -54,4 +54,6 @@ export interface Passage {
   en: string
   /** Кратък размисъл (само при отговор на въпрос — от Gemini). */
   reflection?: { bg: string; en: string }
+  /** true само когато отговорът идва от офлайн резерва (Gemini недостъпен). */
+  offline?: boolean
 }

@@ -258,7 +258,9 @@ function keywordFallback(question: string, passages: Passage[], lang: 'bg' | 'en
       best = p
     }
   }
-  return bestScore > 0 ? best : passages[Math.floor(Math.random() * passages.length)]
+  const chosen = bestScore > 0 ? best : passages[Math.floor(Math.random() * passages.length)]
+  // Маркираме, че отговорът идва от офлайн резерва (Gemini недостъпен).
+  return { ...chosen, offline: true }
 }
 
 /**
