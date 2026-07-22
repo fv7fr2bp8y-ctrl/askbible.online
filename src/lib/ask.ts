@@ -45,20 +45,48 @@ function deriveCategory(code: string, t: 'OT' | 'NT'): PassageCategory {
   return t === 'NT' ? 'nt' : 'ot'
 }
 
-const PROMPT: Record<'bg' | 'en', string> = {
+/** Общо извикване на Gemini с JSON схема. Връща разбрания обект или null. */
+async function callGemini(prompt: string, schema: object): Promise<Record<string, unknown> | null> {
+  if (!GEMINI_API_KEY) return null
+  try {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: 'application/json', responseSchema: schema },
+        }),
+        signal: controller.signal,
+      },
+    ).finally(() => clearTimeout(timer))
+    if (!res.ok) return null
+    const data = await res.json()
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
+    if (!text) return null
+    return JSON.parse(text)
+  } catch {
+    return null
+  }
+}
+
+/* ---------- Стъпка 1: нужда + кандидати ---------- */
+
+const CANDIDATE_PROMPT: Record<'bg' | 'en', string> = {
   bg:
     'Човек ти споделя въпрос, тревога или чувство. НЕ търси буквално съвпадение на думи ' +
     '(напр. "дъжд"→стих за дъжд, "сън"→стих за сън) — вместо това долови по-дълбоката, ' +
     'човешка нужда зад въпроса: несигурност за бъдещето, нужда от спокойствие, доверие, ' +
     'кураж, утеха, надежда, прошка или благодарност. Дори привидно дребен или битов въпрос ' +
     'е повод да откриеш тази по-дълбока нужда — не отговаряй буквално на въпроса.\n\n' +
-    'Работи в този ред:\n' +
     '1) В "need" опиши с няколко думи дълбоката нужда зад въпроса.\n' +
-    '2) В "candidates" дай 3 РЕАЛНИ, добре известни библейски стиха (или до 4 последователни ' +
+    '2) В "candidates" дай 4 РЕАЛНИ, добре известни библейски стиха (или до 4 последователни ' +
     'стиха всеки), които говорят на тази нужда — ПОДРЕДЕНИ от най-подходящия към по-малко ' +
-    'подходящия. Използвай ТОЧНО един "code" от списъка за всеки. Не повтаряй един и същ стих.\n' +
-    '3) В "reflectionBg"/"reflectionEn" дай кратък, топъл размисъл (1-2 изречения, на "ти", ' +
-    'без да цитираш стих) за самата нужда — да пасва на който и да е от кандидатите.\n\n' +
+    'подходящия. Посочвай стихове, чието СЪДЪРЖАНИЕ наистина знаеш — не гадай номера. ' +
+    'Използвай ТОЧНО един "code" от списъка за всеки. Не повтаряй един и същ стих.\n\n' +
     'Книги (code: българско име):\n',
   en:
     'A person shares a question, worry, or feeling with you. Do NOT look for literal word ' +
@@ -66,19 +94,15 @@ const PROMPT: Record<'bg' | 'en', string> = {
     'the deeper human need behind the question: uncertainty about the future, the need for ' +
     'peace, trust, courage, comfort, hope, forgiveness, or gratitude. Even a seemingly small ' +
     'or mundane question is an occasion to find that deeper need — do not answer literally.\n\n' +
-    'Work in this order:\n' +
     '1) In "need", describe in a few words the deeper need behind the question.\n' +
-    '2) In "candidates", give 3 REAL, well-known Bible verses (or up to 4 consecutive verses ' +
-    'each) that speak to that need — RANKED from the most fitting to the less fitting. Use ' +
-    'EXACTLY one "code" from the list for each. Do not repeat the same verse.\n' +
-    '3) In "reflectionBg"/"reflectionEn", give a short, warm reflection (1-2 sentences, ' +
-    'addressed to "you", without quoting a verse) about the need itself — so it fits any of ' +
-    'the candidates.\n\n' +
+    '2) In "candidates", give 4 REAL, well-known Bible verses (or up to 4 consecutive verses ' +
+    'each) that speak to that need — RANKED from most to least fitting. Only cite verses whose ' +
+    'CONTENT you genuinely know — do not guess numbers. Use EXACTLY one "code" from the list ' +
+    'for each. Do not repeat the same verse.\n\n' +
     'Books (code: English name):\n',
 }
 
-// Строга схема — гарантира формата и премахва счупени/непълни отговори.
-const RESPONSE_SCHEMA = {
+const CANDIDATE_SCHEMA = {
   type: 'object',
   properties: {
     need: { type: 'string' },
@@ -95,10 +119,8 @@ const RESPONSE_SCHEMA = {
         required: ['code', 'chapter', 'verseStart'],
       },
     },
-    reflectionBg: { type: 'string' },
-    reflectionEn: { type: 'string' },
   },
-  required: ['candidates', 'reflectionBg', 'reflectionEn'],
+  required: ['need', 'candidates'],
 }
 
 interface RefCore {
@@ -107,59 +129,82 @@ interface RefCore {
   verseStart: number
   verseEnd: number
 }
-interface GeminiResult {
-  candidates: RefCore[]
+
+async function askCandidates(question: string, lang: 'bg' | 'en'): Promise<{ need: string; candidates: RefCore[] } | null> {
+  const books = await loadManifest()
+  const list = books.map((b) => `${b.code}: ${lang === 'bg' ? b.bg : b.en}`).join('\n')
+  const prompt = `${CANDIDATE_PROMPT[lang]}${list}\n\n${lang === 'bg' ? 'Въпрос' : 'Question'}: "${question}"`
+  const parsed = await callGemini(prompt, CANDIDATE_SCHEMA)
+  if (!parsed) return null
+  const raw: unknown[] = Array.isArray(parsed.candidates) ? parsed.candidates : []
+  const candidates: RefCore[] = raw
+    .map((c) => c as Record<string, unknown>)
+    .filter((c) => c?.code && c?.chapter && c?.verseStart)
+    .map((c) => ({
+      code: String(c.code),
+      chapter: Number(c.chapter),
+      verseStart: Number(c.verseStart),
+      verseEnd: Number(c.verseEnd) || Number(c.verseStart),
+    }))
+  if (candidates.length === 0) return null
+  return { need: typeof parsed.need === 'string' ? parsed.need : question, candidates }
+}
+
+/* ---------- Стъпка 2: проверка срещу реалния текст ---------- */
+
+const VERIFY_PROMPT: Record<'bg' | 'en', string> = {
+  bg:
+    'Ето въпроса на човека, дълбоката му нужда и РЕАЛНИТЕ текстове на няколко библейски стиха. ' +
+    'Прецени по СМИСЪЛ (не по думи) кой стих наистина отговаря на нуждата. Върни в "index" ' +
+    'номера (започва от 0) на най-подходящия, или -1 ако НИТО ЕДИН не пасва истински. ' +
+    'В "reflectionBg"/"reflectionEn" дай кратък, топъл размисъл (1-2 изречения, на "ти", без ' +
+    'да цитираш стиха) за избрания стих — на български и английски. При index -1 остави ' +
+    'размисъла празен.\n\n',
+  en:
+    "Here is the person's question, their deeper need, and the REAL texts of several Bible " +
+    'verses. Judge by MEANING (not words) which verse truly answers the need. In "index" return ' +
+    'the number (starting from 0) of the most fitting one, or -1 if NONE truly fits. In ' +
+    '"reflectionBg"/"reflectionEn" give a short, warm reflection (1-2 sentences, addressed to ' +
+    '"you", without quoting the verse) for the chosen verse — in Bulgarian and English. If ' +
+    'index is -1, leave the reflection empty.\n\n',
+}
+
+const VERIFY_SCHEMA = {
+  type: 'object',
+  properties: {
+    index: { type: 'integer' },
+    reflectionBg: { type: 'string' },
+    reflectionEn: { type: 'string' },
+  },
+  required: ['index'],
+}
+
+interface Verdict {
+  index: number
   reflectionBg?: string
   reflectionEn?: string
 }
 
-async function askGemini(question: string, lang: 'bg' | 'en'): Promise<GeminiResult | null> {
-  if (!GEMINI_API_KEY) return null
-  const books = await loadManifest()
-  const list = books.map((b) => `${b.code}: ${lang === 'bg' ? b.bg : b.en}`).join('\n')
-  try {
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `${PROMPT[lang]}${list}\n\n${lang === 'bg' ? 'Въпрос' : 'Question'}: "${question}"` }] }],
-          generationConfig: { responseMimeType: 'application/json', responseSchema: RESPONSE_SCHEMA },
-        }),
-        signal: controller.signal,
-      },
-    ).finally(() => clearTimeout(timer))
-    if (!res.ok) return null
-    const data = await res.json()
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
-    if (!text) return null
-    const parsed = JSON.parse(text)
-    const rawCandidates: unknown[] = Array.isArray(parsed?.candidates) ? parsed.candidates : []
-    const candidates: RefCore[] = rawCandidates
-      .map((c) => c as Record<string, unknown>)
-      .filter((c) => c?.code && c?.chapter && c?.verseStart)
-      .map((c) => ({
-        code: String(c.code),
-        chapter: Number(c.chapter),
-        verseStart: Number(c.verseStart),
-        verseEnd: Number(c.verseEnd) || Number(c.verseStart),
-      }))
-    if (candidates.length === 0) return null
-    return {
-      candidates,
-      reflectionBg: typeof parsed.reflectionBg === 'string' ? parsed.reflectionBg : undefined,
-      reflectionEn: typeof parsed.reflectionEn === 'string' ? parsed.reflectionEn : undefined,
-    }
-  } catch {
-    return null
+async function verifyBest(question: string, need: string, resolved: Passage[], lang: 'bg' | 'en'): Promise<Verdict | null> {
+  const items = resolved
+    .map((p, i) => `${i}) [${lang === 'bg' ? p.refBg : p.refEn}] „${lang === 'bg' ? p.bg : p.en}"`)
+    .join('\n')
+  const prompt =
+    `${VERIFY_PROMPT[lang]}${lang === 'bg' ? 'Въпрос' : 'Question'}: "${question}"\n` +
+    `${lang === 'bg' ? 'Нужда' : 'Need'}: "${need}"\n\n${lang === 'bg' ? 'Стихове' : 'Verses'}:\n${items}`
+  const parsed = await callGemini(prompt, VERIFY_SCHEMA)
+  if (!parsed || typeof parsed.index !== 'number') return null
+  return {
+    index: parsed.index,
+    reflectionBg: typeof parsed.reflectionBg === 'string' ? parsed.reflectionBg : undefined,
+    reflectionEn: typeof parsed.reflectionEn === 'string' ? parsed.reflectionEn : undefined,
   }
 }
 
+/* ---------- Разрешаване към реалния текст ---------- */
+
 /** Проверява предложената препратка срещу реалния текст и връща Passage, ако е валидна. */
-async function resolveReference(ref: RefCore, reflection?: { bg?: string; en?: string }): Promise<Passage | null> {
+async function resolveReference(ref: RefCore): Promise<Passage | null> {
   const book = await loadBook(ref.code)
   if (!book) return null
   const chapterVerses = book.chapters[String(ref.chapter)]
@@ -188,9 +233,13 @@ async function resolveReference(ref: RefCore, reflection?: { bg?: string; en?: s
     verseEnd: v2,
     bg: bgParts.join(' '),
     en: enParts.join(' '),
-    reflection:
-      reflection?.bg && reflection?.en ? { bg: reflection.bg, en: reflection.en } : undefined,
   }
+}
+
+function withReflection(p: Passage, v?: Verdict): Passage {
+  return v?.reflectionBg && v?.reflectionEn
+    ? { ...p, reflection: { bg: v.reflectionBg, en: v.reflectionEn } }
+    : p
 }
 
 /** Резервен избор по препокриване на думи — измежду подбраните откъси, офлайн. */
@@ -213,12 +262,16 @@ function keywordFallback(question: string, passages: Passage[], lang: 'bg' | 'en
 }
 
 /**
- * Намира най-подходящия стих в ЦЯЛАТА Библия (66 книги) за въпроса.
- * Gemini първо назовава дълбоката нужда, после дава 3 ПОДРЕДЕНИ кандидата;
- * ние взимаме реалния текст от собствения си, проверен набор от данни (никога
- * не показваме измислен/неточен цитат) и връщаме първия кандидат, който се
- * разрешава успешно. При пълен неуспех — втори опит, после офлайн резерв
- * измежду подбраните откъси по ключови думи.
+ * Намира най-подходящия стих в ЦЯЛАТА Библия (66 книги) за въпроса — двустъпково:
+ *
+ *  1) Gemini назовава дълбоката нужда и дава подредени кандидат-стихове.
+ *  2) Разрешаваме всеки към РЕАЛНИЯ текст от собствения си проверен набор.
+ *  3) Връщаме реалните текстове обратно на Gemini, който избира по СМИСЪЛ кой
+ *     наистина отговаря на нуждата (или -1 = никой) — така изборът се проверява
+ *     срещу истинския текст, а не срещу паметта на модела.
+ *
+ * Ако проверката каже „никой" → нов кръг кандидати. При технически неуспех на
+ * проверката ползваме най-добрия кандидат по ред. Накрая — офлайн резерв.
  */
 export async function findAnswer(
   question: string,
@@ -229,14 +282,25 @@ export async function findAnswer(
   if (!q) return fallbackPassages[Math.floor(Math.random() * fallbackPassages.length)]
 
   for (let attempt = 0; attempt < 2; attempt++) {
-    const result = await askGemini(q, lang)
-    if (!result) continue
-    const reflection = { bg: result.reflectionBg, en: result.reflectionEn }
-    // Кандидатите са подредени по релевантност — взимаме първия, който има реален текст.
-    for (const cand of result.candidates) {
-      const passage = await resolveReference(cand, reflection)
-      if (passage) return passage
+    const cand = await askCandidates(q, lang)
+    if (!cand) continue
+
+    // Проверка 1: препратката съществува → взимаме реалния текст.
+    const resolved: Passage[] = []
+    for (const core of cand.candidates) {
+      const p = await resolveReference(core)
+      if (p && !resolved.some((r) => r.id === p.id)) resolved.push(p)
     }
+    if (resolved.length === 0) continue
+
+    // Проверка 2: реалните текстове наистина отговарят на нуждата.
+    const verdict = await verifyBest(q, cand.need, resolved, lang)
+    if (!verdict) return resolved[0] // проверката се провали технически → най-добрият по ред
+    if (verdict.index >= 0 && verdict.index < resolved.length) {
+      return withReflection(resolved[verdict.index], verdict)
+    }
+    // index === -1: нито един не пасва → нов кръг; ако е последен опит — най-добрия по ред.
+    if (attempt === 1) return resolved[0]
   }
   return keywordFallback(q, fallbackPassages, lang)
 }
