@@ -14,26 +14,36 @@ export default defineConfig(() => {
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'logo.svg', 'logo-emblem.png', 'robots.txt'],
+      includeAssets: ['favicon.svg', 'logo.svg', 'logo-emblem.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'robots.txt'],
       manifest: {
+        id: '/',
         name: 'Попитай Библията',
         short_name: 'Попитай Библията',
-        description: 'Задай въпрос и получи библейски стих в отговор.',
+        description: 'Задай въпрос и получи най-подходящия библейски стих в отговор, с кратък размисъл. На български и английски.',
         lang: 'bg',
+        dir: 'ltr',
+        categories: ['books', 'lifestyle', 'education'],
         theme_color: '#14100c',
         background_color: '#14100c',
         display: 'standalone',
+        orientation: 'portrait',
         start_url: base,
         scope: base,
         icons: [
           {
-            src: 'logo-emblem.png',
+            src: 'icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: 'logo-emblem.png',
+            src: 'icon-maskable-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
@@ -47,7 +57,7 @@ export default defineConfig(() => {
         // Аудио файловете могат да са големи — кешираме ги при поискване.
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname.includes('/audio/'),
+            urlPattern: ({ url }: { url: URL }) => url.pathname.includes('/audio/'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'tihstih-audio',
@@ -56,7 +66,7 @@ export default defineConfig(() => {
             },
           },
           {
-            urlPattern: ({ url }) => url.pathname.includes('/audio-bible/'),
+            urlPattern: ({ url }: { url: URL }) => url.pathname.includes('/audio-bible/'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'bible-audio',
@@ -64,7 +74,7 @@ export default defineConfig(() => {
             },
           },
           {
-            urlPattern: ({ url }) => url.pathname.includes('/bible/'),
+            urlPattern: ({ url }: { url: URL }) => url.pathname.includes('/bible/'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'bible-text',
