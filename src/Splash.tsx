@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react'
 import { assetUrl } from './lib/asset'
-import { useI18n } from './lib/i18n'
 import './splash.css'
 
 /**
  * Начален (splash) екран — показва се при отваряне, после плавно избледнява
- * към приложението. Възпроизвежда естетиката „светлина от отворената книга".
- * Двуезичен (BG/EN) чрез i18n. Само визуален момент — не блокира зареждането.
+ * към приложението. Естетика „светлина от отворената книга". Испански.
  */
 export function Splash({ onDone }: { onDone: () => void }) {
-  const { t } = useI18n()
-  const b = t.bible
   const [leaving, setLeaving] = useState(false)
 
   useEffect(() => {
@@ -34,14 +30,14 @@ export function Splash({ onDone }: { onDone: () => void }) {
       <div className="splash-rays" aria-hidden />
 
       <div className="splash-title-wrap">
-        <div className="splash-eyebrow-top">{b.title1}</div>
-        <h1 className="splash-title">{b.title2}</h1>
+        <div className="splash-eyebrow-top">PREGÚNTALE</div>
+        <h1 className="splash-title">A LA BIBLIA</h1>
         <div className="splash-divider">
           <span className="splash-divider-line" />
           <span className="splash-divider-mark">◆</span>
           <span className="splash-divider-line is-right" />
         </div>
-        <div className="splash-eyebrow">{b.eyebrow}!</div>
+        <div className="splash-eyebrow">HAZ TU PREGUNTA</div>
       </div>
 
       <div className="splash-book">

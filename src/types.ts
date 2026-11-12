@@ -35,12 +35,12 @@ export interface Album {
 /** Категория на библейски откъс. */
 export type PassageCategory = 'gospels' | 'psalms' | 'proverbs' | 'nt' | 'ot'
 
-/** Подбран „завършен" откъс от Писанието, двуезичен. */
+/** Подбран „завършен" откъс от Писанието (испански, с английски резерв). */
 export interface Passage {
   id: string
   category: PassageCategory
-  /** Препратка на български, напр. „Матей 6:34". */
-  refBg: string
+  /** Препратка на испански, напр. „Mateo 6:34". */
+  refEs: string
   /** Препратка на английски, напр. „Matthew 6:34". */
   refEn: string
   /** OSIS код на книгата (за зареждане на контекста). */
@@ -48,12 +48,12 @@ export interface Passage {
   chapter: number
   verseStart: number
   verseEnd: number
-  /** Текст на български. */
-  bg: string
+  /** Текст на испански. */
+  es: string
   /** Текст на английски. */
   en: string
   /** Кратък размисъл (само при отговор на въпрос — от Gemini). */
-  reflection?: { bg: string; en: string }
+  reflection?: { es: string; en?: string }
   /** true само когато отговорът идва от офлайн резерва (Gemini недостъпен). */
   offline?: boolean
 }

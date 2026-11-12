@@ -1,8 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { passages } from './data/passages'
 import { assetUrl } from './lib/asset'
-import { useI18n } from './lib/i18n'
-import { speak, stopSpeech, prewarm } from './lib/tts'
 import { findAnswer, ASK_ENABLED } from './lib/ask'
 import { IconBook, IconHarp, IconScroll, IconFlame, IconDove } from './lib/icons'
 import type { Passage, PassageCategory } from './types'
@@ -12,9 +10,6 @@ import './bible-app.css'
 type Screen = 'home' | 'answer' | 'cats'
 type Mode = 'ask' | 'browse'
 
-// Временно изключен глас (TTS). За връщане: смени на TTS_ENABLED.
-const VOICE_ENABLED = false
-
 const CAT_ORDER: PassageCategory[] = ['gospels', 'psalms', 'proverbs', 'ot', 'nt']
 const CAT_ICON: Record<PassageCategory, () => JSX.Element> = {
   gospels: IconBook,
@@ -23,6 +18,49 @@ const CAT_ICON: Record<PassageCategory, () => JSX.Element> = {
   ot: IconFlame,
   nt: IconDove,
 }
+
+/** Испански низове за интерфейса (приложението е само на испански). */
+const S = {
+  eyebrow: 'HAZ TU PREGUNTA',
+  title1: 'PREGÚNTALE',
+  title2: 'A LA BIBLIA',
+  tagline: 'Un versículo para la pregunta que llevas dentro.',
+  askPlaceholder: '¿Qué pregunta llevas en el corazón?',
+  askAria: 'Haz una pregunta',
+  askButton: 'Buscar respuesta',
+  asking: 'Buscando…',
+  chip1: '¿Cómo encontrar paz?',
+  chip2: 'Un versículo para días difíciles',
+  chip3: 'Perdón',
+  surprise: 'Sorpréndeme',
+  back: 'Atrás',
+  navHome: 'Inicio',
+  navCats: 'Categorías',
+  savedTitle: 'Guardados',
+  noSaved: 'Aún no tienes versículos guardados.',
+  reflectionLabel: 'Reflexión',
+  actCopy: 'Copiar',
+  actShare: 'Compartir',
+  copied: '✓ Copiado',
+  save: 'Guardar',
+  saved: 'Guardado',
+  unsave: 'Quitar',
+  close: 'Cerrar',
+  openAgain: 'Abrir otro',
+  askAnother: 'Hacer otra pregunta',
+  offlineNote: '⚠ Modo sin conexión — la búsqueda inteligente no está disponible ahora',
+  catsEyebrow: 'EXPLORA',
+  catsTitle: 'Categorías',
+  cats: { gospels: 'Evangelios', psalms: 'Salmos', proverbs: 'Proverbios', nt: 'Epístolas', ot: 'Profetas' } as Record<PassageCategory, string>,
+  catsDesc: {
+    gospels: 'La vida y las palabras de Cristo',
+    psalms: 'Oraciones, alabanza y consuelo',
+    proverbs: 'Sabiduría para cada día',
+    nt: 'Guía para una fe viva',
+    ot: 'Promesas y esperanza',
+  } as Record<PassageCategory, string>,
+}
+
 const SAVED_KEY = 'bible-saved'
 
 function pickRandom(pool: Passage[], notId?: string): Passage | null {
@@ -35,9 +73,6 @@ function pickRandom(pool: Passage[], notId?: string): Passage | null {
 }
 
 export function BibleApp() {
-  const { t, lang, toggle } = useI18n()
-  const b = t.bible
-
   const [screen, setScreen] = useState<Screen>('home')
   const [mode, setMode] = useState<Mode>('browse')
   const [current, setCurrent] = useState<Passage | null>(() => pickRandom(passages))
@@ -63,14 +98,6 @@ export function BibleApp() {
     }
   }, [saved])
 
-  // Предварително синтезираме текущия откъс, та „Чуй" да е мигновено.
-  useEffect(() => {
-    if (!current || !VOICE_ENABLED) return
-    const txt = lang === 'bg' ? current.bg : current.en
-    const id = setTimeout(() => prewarm(txt, lang), 600)
-    return () => clearTimeout(id)
-  }, [current, lang])
-
   function toggleSave(id: string) {
     setSaved((s) => (s.includes(id) ? s.filter((x) => x !== id) : [id, ...s]))
   }
@@ -80,7 +107,7 @@ export function BibleApp() {
     if (!q || asking) return
     setAsking(true)
     try {
-      const match = await findAnswer(q, passages, lang)
+      const match = await findAnswer(q, passages)
       setCurrent(match)
       setMode('ask')
       setLastQuestion(q)
@@ -124,9 +151,9 @@ export function BibleApp() {
 
   const showBack = screen !== 'home'
   const isSaved = current ? saved.includes(current.id) : false
-  const text = current ? (lang === 'bg' ? current.bg : current.en) : ''
-  const ref = current ? (lang === 'bg' ? current.refBg : current.refEn) : ''
-  const reflection = current?.reflection ? (lang === 'bg' ? current.reflection.bg : current.reflection.en) : null
+  const text = current?.es ?? ''
+  const ref = current?.refEs ?? ''
+  const reflection = current?.reflection?.es ?? null
 
   return (
     <div className="ba-shell">
@@ -135,13 +162,9 @@ export function BibleApp() {
           {showBack && (
             <button className="ba-back" onClick={() => setScreen('home')}>
               <IconChevronLeft />
-              {b.back}
+              {S.back}
             </button>
           )}
-        </div>
-        <div className="lp-lang">
-          <button className={`lp-lang-btn${lang === 'bg' ? ' is-on' : ''}`} onClick={() => lang !== 'bg' && toggle()}>BG</button>
-          <button className={`lp-lang-btn${lang === 'en' ? ' is-on' : ''}`} onClick={() => lang !== 'en' && toggle()}>EN</button>
         </div>
       </div>
 
@@ -152,18 +175,18 @@ export function BibleApp() {
             <div className="ba-home-glow" aria-hidden />
             <div className="ba-home-head">
               <img className="ba-emblem" src={assetUrl('/logo-emblem.png')} alt="" />
-              <div className="ba-eyebrow">{b.eyebrow}</div>
+              <div className="ba-eyebrow">{S.eyebrow}</div>
               <h1 className="ba-title">
-                {b.title1}
+                {S.title1}
                 <br />
-                {b.title2}
+                {S.title2}
               </h1>
               <div className="ba-divider">
                 <span className="ba-divider-line" />
                 <span className="ba-divider-mark">◆</span>
                 <span className="ba-divider-line is-right" />
               </div>
-              <p className="ba-tagline">{b.tagline}</p>
+              <p className="ba-tagline">{S.tagline}</p>
             </div>
 
             <div className="ba-ask-block">
@@ -181,12 +204,12 @@ export function BibleApp() {
                       type="text"
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
-                      placeholder={b.askPlaceholder}
-                      aria-label={b.askAria}
+                      placeholder={S.askPlaceholder}
+                      aria-label={S.askAria}
                     />
                   </div>
                   <div className="ba-chips">
-                    {[b.chip1, b.chip2, b.chip3].map((chip) => (
+                    {[S.chip1, S.chip2, S.chip3].map((chip) => (
                       <button
                         key={chip}
                         type="button"
@@ -202,11 +225,11 @@ export function BibleApp() {
                     ))}
                   </div>
                   <button className="ba-cta" type="submit" disabled={asking || !question.trim()}>
-                    {asking ? b.asking : b.askButton}
+                    {asking ? S.asking : S.askButton}
                   </button>
                 </form>
               ) : (
-                <button className="ba-cta" onClick={browseRandom}>{b.surprise}</button>
+                <button className="ba-cta" onClick={browseRandom}>{S.surprise}</button>
               )}
             </div>
           </div>
@@ -220,7 +243,7 @@ export function BibleApp() {
               </div>
             )}
 
-            {mode === 'ask' && current.offline && <div className="ba-offline-note">{b.offlineNote}</div>}
+            {mode === 'ask' && current.offline && <div className="ba-offline-note">{S.offlineNote}</div>}
 
             <div className="ba-verse-card">
               <div className="ba-verse-glow" aria-hidden />
@@ -228,36 +251,35 @@ export function BibleApp() {
                 <IconSparkle />
                 <span className="ba-verse-ref">{ref}</span>
               </button>
-              <p className="ba-verse-text">„{text}“</p>
+              <p className="ba-verse-text">«{text}»</p>
             </div>
 
             {reflection && (
               <>
-                <div className="ba-reflection-label">{b.reflectionLabel}</div>
+                <div className="ba-reflection-label">{S.reflectionLabel}</div>
                 <p className="ba-reflection-text">{reflection}</p>
               </>
             )}
 
             <div className="ba-actions">
-              {VOICE_ENABLED && <ListenAction text={text} lang={lang} label={b.listen} stopLabel={b.stop} />}
-              <CopyAction text={`„${text}“ — ${ref}`} label={b.actCopy} copiedLabel={t.copied} />
-              <ShareAction text={text} verseRef={ref} label={b.actShare} copiedLabel={t.copied} />
+              <CopyAction text={`«${text}» — ${ref}`} label={S.actCopy} copiedLabel={S.copied} />
+              <ShareAction text={text} verseRef={ref} label={S.actShare} copiedLabel={S.copied} />
               <button className={`ba-action${isSaved ? ' is-on' : ''}`} onClick={() => toggleSave(current.id)}>
                 <IconHeart filled={isSaved} />
-                {isSaved ? b.saved : b.save}
+                {isSaved ? S.saved : S.save}
               </button>
             </div>
 
             <button className="ba-cta" onClick={mode === 'ask' ? askAnother : openAgain}>
-              {mode === 'ask' ? b.askAnother : '↻ ' + b.openAgain}
+              {mode === 'ask' ? S.askAnother : '↻ ' + S.openAgain}
             </button>
           </div>
         )}
 
         {screen === 'cats' && (
           <div className="ba-screen ba-cats">
-            <div className="lp-section-eyebrow">{b.catsEyebrow}</div>
-            <h2 className="lp-section-title">{b.catsTitle}</h2>
+            <div className="lp-section-eyebrow">{S.catsEyebrow}</div>
+            <h2 className="lp-section-title">{S.catsTitle}</h2>
             <div className="ba-cats-list">
               {CAT_ORDER.map((c) => {
                 const Icon = CAT_ICON[c]
@@ -265,8 +287,8 @@ export function BibleApp() {
                   <button key={c} className="lp-cat-card" onClick={() => browseCategory(c)}>
                     <div className="lp-cat-icon"><Icon /></div>
                     <div className="ba-cat-text">
-                      <div className="lp-cat-name">{b.cats[c]}</div>
-                      <div className="lp-cat-desc">{b.catsDesc[c]}</div>
+                      <div className="lp-cat-name">{S.cats[c]}</div>
+                      <div className="lp-cat-desc">{S.catsDesc[c]}</div>
                     </div>
                     <IconChevronRight className="ba-cat-chevron" />
                   </button>
@@ -280,25 +302,24 @@ export function BibleApp() {
       <nav className="ba-navbar">
         <button className={`ba-nav-btn${screen === 'home' ? ' is-active' : ''}`} onClick={() => setScreen('home')}>
           <IconHome />
-          {b.navHome}
+          {S.navHome}
         </button>
         <button className={`ba-nav-btn${screen === 'cats' ? ' is-active' : ''}`} onClick={() => setScreen('cats')}>
           <IconGrid />
-          {b.navCats}
+          {S.navCats}
         </button>
         <button className="ba-nav-btn" onClick={() => setShowSaved(true)}>
           <IconHeart filled={false} />
-          {b.savedTitle}{saved.length ? ` (${saved.length})` : ''}
+          {S.savedTitle}{saved.length ? ` (${saved.length})` : ''}
         </button>
       </nav>
 
       {showContext && current && (
-        <ContextModal passage={current} lang={lang} onClose={() => setShowContext(false)} closeLabel={b.close} />
+        <ContextModal passage={current} onClose={() => setShowContext(false)} closeLabel={S.close} />
       )}
       {showSaved && (
         <SavedModal
           ids={saved}
-          lang={lang}
           onClose={() => setShowSaved(false)}
           onOpen={(p) => {
             setCurrent(p)
@@ -308,10 +329,10 @@ export function BibleApp() {
             setScreen('answer')
           }}
           onRemove={toggleSave}
-          title={b.savedTitle}
-          empty={b.noSaved}
-          closeLabel={b.close}
-          removeLabel={b.unsave}
+          title={S.savedTitle}
+          empty={S.noSaved}
+          closeLabel={S.close}
+          removeLabel={S.unsave}
         />
       )}
     </div>
@@ -346,21 +367,6 @@ function IconSparkle() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="#d7b06c">
       <path d="M12 2l2.4 6.9H22l-6 4.4 2.3 7-6.3-4.6L5.7 20l2.3-7-6-4.4h7.6z" />
-    </svg>
-  )
-}
-function IconListen() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 5L6 9H3v6h3l5 4V5z" />
-      <path d="M16 9a4 4 0 0 1 0 6" />
-    </svg>
-  )
-}
-function IconStop() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-      <rect x="6" y="6" width="12" height="12" rx="2" />
     </svg>
   )
 }
@@ -408,36 +414,7 @@ function IconGrid() {
   )
 }
 
-/* ---------- Действия под стиха ---------- */
-
-function ListenAction({ text, lang, label, stopLabel }: { text: string; lang: 'bg' | 'en'; label: string; stopLabel: string }) {
-  const [state, setState] = useState<'idle' | 'loading' | 'speaking'>('idle')
-
-  useEffect(() => {
-    stopSpeech()
-    setState('idle')
-  }, [text])
-  useEffect(() => () => stopSpeech(), [])
-
-  function handle() {
-    if (state !== 'idle') {
-      stopSpeech()
-      setState('idle')
-      return
-    }
-    setState('loading')
-    void speak(text, lang, () => setState('idle')).then(() => {
-      setState((s) => (s === 'loading' ? 'speaking' : s))
-    })
-  }
-
-  return (
-    <button className={`ba-action${state !== 'idle' ? ' is-on' : ''}`} onClick={handle}>
-      {state === 'speaking' ? <IconStop /> : <IconListen />}
-      {state === 'loading' ? '…' : state === 'speaking' ? stopLabel : label}
-    </button>
-  )
-}
+/* ---------- Acciones bajo el versículo ---------- */
 
 function CopyAction({ text, label, copiedLabel }: { text: string; label: string; copiedLabel: string }) {
   const [copied, setCopied] = useState(false)
@@ -460,7 +437,7 @@ function CopyAction({ text, label, copiedLabel }: { text: string; label: string;
 
 function ShareAction({ text, verseRef, label, copiedLabel }: { text: string; verseRef: string; label: string; copiedLabel: string }) {
   const [copied, setCopied] = useState(false)
-  const shareText = `„${text}“ — ${verseRef}`
+  const shareText = `«${text}» — ${verseRef}`
   const url = window.location.origin
 
   async function handleShare() {
@@ -468,7 +445,7 @@ function ShareAction({ text, verseRef, label, copiedLabel }: { text: string; ver
       try {
         await navigator.share({ title: verseRef, text: shareText, url })
       } catch {
-        // Потребителят е отказал споделянето — нищо не правим.
+        // El usuario canceló — no hacemos nada.
       }
     } else {
       try {
@@ -488,16 +465,16 @@ function ShareAction({ text, verseRef, label, copiedLabel }: { text: string; ver
   )
 }
 
-/* ---------- Модали (контекст / запазени) ---------- */
+/* ---------- Modales (contexto / guardados) ---------- */
 
 interface BookFile {
-  bg: string
+  es: string
   en: string
   t: 'OT' | 'NT'
   chapters: Record<string, Record<string, [string, string]>>
 }
 
-function ContextModal({ passage, lang, onClose, closeLabel }: { passage: Passage; lang: string; onClose: () => void; closeLabel: string }) {
+function ContextModal({ passage, onClose, closeLabel }: { passage: Passage; onClose: () => void; closeLabel: string }) {
   const [data, setData] = useState<BookFile | null>(null)
 
   useEffect(() => {
@@ -518,9 +495,10 @@ function ContextModal({ passage, lang, onClose, closeLabel }: { passage: Passage
     ? Object.keys(chapterVerses)
         .map(Number)
         .sort((a, b) => a - b)
-        .map((v) => ({ v, text: chapterVerses[String(v)][lang === 'bg' ? 0 : 1] }))
+        .map((v) => ({ v, text: chapterVerses[String(v)][0] }))
+        .filter((x) => x.text)
     : []
-  const ref = data ? `${lang === 'bg' ? data.bg : data.en} ${passage.chapter}` : ''
+  const ref = data ? `${data.es} ${passage.chapter}` : ''
 
   return (
     <div className="modal" role="dialog" aria-modal onClick={onClose}>
@@ -546,10 +524,9 @@ function ContextModal({ passage, lang, onClose, closeLabel }: { passage: Passage
 }
 
 function SavedModal({
-  ids, lang, onClose, onOpen, onRemove, title, empty, closeLabel, removeLabel,
+  ids, onClose, onOpen, onRemove, title, empty, closeLabel, removeLabel,
 }: {
   ids: string[]
-  lang: string
   onClose: () => void
   onOpen: (p: Passage) => void
   onRemove: (id: string) => void
@@ -571,8 +548,8 @@ function SavedModal({
           {items.map((p) => (
             <div key={p.id} className="saved-item">
               <button className="saved-open" onClick={() => onOpen(p)}>
-                <span className="saved-ref">{lang === 'bg' ? p.refBg : p.refEn}</span>
-                <span className="saved-text">{(lang === 'bg' ? p.bg : p.en).slice(0, 90)}…</span>
+                <span className="saved-ref">{p.refEs}</span>
+                <span className="saved-text">{p.es.slice(0, 90)}…</span>
               </button>
               <button className="text-btn" onClick={() => onRemove(p.id)}>{removeLabel}</button>
             </div>

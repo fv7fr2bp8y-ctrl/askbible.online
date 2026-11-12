@@ -40,56 +40,33 @@ Activity) — тънка Android обвивка около сайта `https://a
 
 ---
 
-## Текст за описанието
+## Текст за описанието (испански — за първото пускане)
 
-### Български
-**Заглавие (до 30 знака):** `Попитай Библията`
+**Заглавие (до 30 знака):** `Pregúntale a la Biblia`
 
 **Кратко описание (до 80 знака):**
-`Задай въпрос и получи най-подходящия библейски стих с кратък размисъл.`
+`Haz una pregunta y recibe el versículo bíblico que le habla, con una reflexión.`
 
 **Пълно описание:**
 ```
-Попитай Библията с думите, които носиш в сърцето си — а приложението намира
-най-подходящия стих за твоя въпрос.
+Pregúntale a la Biblia con las palabras que llevas en el corazón — y la app
+encuentra el versículo que mejor habla a tu pregunta.
 
-Не търси буквално съвпадение на думи, а долавя по-дълбоката нужда зад въпроса:
-спокойствие, кураж, утеха, надежда, прошка или благодарност. Всеки отговор идва
-с кратък топъл размисъл как да приложиш словото в своя ден.
+En lugar de buscar coincidencias literales de palabras, percibe la necesidad más
+profunda detrás de la pregunta: paz, valor, consuelo, esperanza, perdón o
+gratitud. Cada respuesta llega con una breve y cálida reflexión para llevar la
+Palabra a tu día.
 
-• Търсене в цялата Библия (66 книги)
-• Реален, проверен текст — никога измислени цитати
-• Кратък размисъл към всеки стих
-• Разглеждане по теми: Евангелия, Псалми, Притчи, Пророци, Послания
-• Запазвай любими стихове
-• На български и английски
-• Безплатно, без реклами, без регистрация
+• Busca en toda la Biblia (66 libros)
+• Texto real y verificado (Reina-Valera 1909) — nunca citas inventadas
+• Una breve reflexión con cada versículo
+• Explora por temas: Evangelios, Salmos, Proverbios, Profetas, Epístolas
+• Guarda tus versículos favoritos
+• Gratis, sin anuncios, sin registro
 
-Задай своя въпрос — Библията има отговор.
+Haz tu pregunta — la Biblia tiene una respuesta.
 ```
 
-### English
-**Title (≤30):** `Ask the Bible`
+> Privacy Policy: `https://askbible.online/privacy.html`
+> Package ID: `online.askbible.twa`
 
-**Short description (≤80):**
-`Ask a question and receive the Bible verse that speaks to it, with a reflection.`
-
-**Full description:**
-```
-Ask the Bible in your own words — and the app finds the verse that speaks most
-closely to your question.
-
-Instead of matching words literally, it senses the deeper need behind the
-question: peace, courage, comfort, hope, forgiveness or gratitude. Every answer
-comes with a short, warm reflection on how to carry it into your day.
-
-• Searches the whole Bible (66 books)
-• Real, verified text — never fabricated quotes
-• A short reflection with every verse
-• Browse by theme: Gospels, Psalms, Proverbs, Prophets, Epistles
-• Save your favorite verses
-• In Bulgarian and English
-• Free, no ads, no sign-up
-
-Ask your question — the Bible has an answer.
-```
