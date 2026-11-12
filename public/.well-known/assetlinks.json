@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "online.askbible.twa",
       "sha256_cert_fingerprints": [
-        "ЗАМЕНИ_С_SHA256_ОТ_PLAY_CONSOLE_APP_SIGNING"
+        "8A:D0:D7:BD:A6:8E:2B:C2:80:FF:D4:53:1C:97:B0:2F:6A:9D:DC:D0:FC:53:47:78:99:8A:B0:D0:21:B5:B2:76",
+        "0C:EE:9A:F1:A7:93:2D:17:A5:22:5B:77:23:7C:B4:47:EB:4E:5F:C8:33:03:6E:2E:74:94:BA:FF:F4:E9:49:07"
       ]
     }
   }
