@@ -13,23 +13,97 @@
       rel="stylesheet"
     />
     <meta name="theme-color" content="#14100c" />
-    <meta name="description" content="Pregúntale a la Biblia — haz una pregunta y recibe el versículo que le habla, con una breve reflexión." />
-    <title>Pregúntale a la Biblia</title>
+    <title>Pregúntale a la Biblia: haz una pregunta y recibe un versículo</title>
+    <meta name="description" content="Escribe tu pregunta y recibe el versículo de la Biblia (Reina-Valera 1909) que mejor le responde, con una breve reflexión. Gratis en la web y en Google Play." />
+    <link rel="canonical" href="https://askbible.online/" />
 
     <!-- Open Graph — para una vista previa correcta en chats y redes sociales. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Pregúntale a la Biblia" />
+    <meta property="og:locale" content="es_ES" />
     <meta property="og:title" content="Pregúntale a la Biblia" />
     <meta property="og:description" content="Haz una pregunta y recibe el versículo que le habla, con una breve reflexión." />
     <meta property="og:url" content="https://askbible.online/" />
-    <meta property="og:image" content="https://askbible.online/logo-emblem.png" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://askbible.online/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Pregúntale a la Biblia" />
     <meta name="twitter:description" content="Haz una pregunta y recibe el versículo que le habla." />
-    <meta name="twitter:image" content="https://askbible.online/logo-emblem.png" />
+    <meta name="twitter:image" content="https://askbible.online/og-image.png" />
+
+    <!-- Структурирани данни: сайтът и приложението в Google Play. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://askbible.online/#website",
+            "name": "Pregúntale a la Biblia",
+            "url": "https://askbible.online/",
+            "inLanguage": "es",
+            "publisher": { "@type": "Organization", "name": "New Age Studio" }
+          },
+          {
+            "@type": "MobileApplication",
+            "name": "Pregúntale a la Biblia",
+            "operatingSystem": "ANDROID",
+            "applicationCategory": "LifestyleApplication",
+            "inLanguage": "es",
+            "url": "https://play.google.com/store/apps/details?id=online.askbible.twa",
+            "installUrl": "https://play.google.com/store/apps/details?id=online.askbible.twa",
+            "image": "https://askbible.online/icon-512.png",
+            "description": "Haz una pregunta y recibe el versículo bíblico (Reina-Valera 1909) que mejor le habla, con una breve reflexión.",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+            "publisher": { "@type": "Organization", "name": "New Age Studio" }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Съдържание за търсачките и за браузъри без JavaScript; React го заменя при зареждане. -->
+      <div style="max-width:640px;margin:0 auto;padding:48px 18px;color:#f3e9d7;background:#14100c;font-family:Georgia,serif">
+        <h1 style="color:#e8c98a">Pregúntale a la Biblia</h1>
+        <p>Escribe tu pregunta y recibe el versículo de la Biblia que mejor le responde, con una breve reflexión. Texto de la Reina-Valera 1909.</p>
+        <p><a style="color:#e8c98a" href="https://play.google.com/store/apps/details?id=online.askbible.twa">Descargar en Google Play</a></p>
+        <h2 style="color:#e8c98a"><a style="color:#e8c98a" href="/temas/">Versículos por tema</a></h2>
+        <ul>
+          <li><a href="/temas/ansiedad/">Versículos sobre la ansiedad</a></li>
+          <li><a href="/temas/miedo/">Versículos sobre el miedo</a></li>
+          <li><a href="/temas/paz/">Versículos sobre la paz</a></li>
+          <li><a href="/temas/perdon/">Qué dice la Biblia sobre el perdón</a></li>
+          <li><a href="/temas/amor/">Versículos sobre el amor</a></li>
+          <li><a href="/temas/fe/">Versículos sobre la fe</a></li>
+          <li><a href="/temas/esperanza/">Versículos de esperanza</a></li>
+          <li><a href="/temas/fortaleza/">Versículos de fortaleza</a></li>
+          <li><a href="/temas/consuelo/">Versículos de consuelo</a></li>
+          <li><a href="/temas/tristeza/">Versículos para la tristeza</a></li>
+          <li><a href="/temas/soledad/">Versículos para la soledad</a></li>
+          <li><a href="/temas/duelo/">Versículos para el duelo y la pérdida de un ser querido</a></li>
+          <li><a href="/temas/sanidad/">Versículos de sanidad</a></li>
+          <li><a href="/temas/proteccion/">Versículos de protección</a></li>
+          <li><a href="/temas/familia/">Versículos sobre la familia</a></li>
+          <li><a href="/temas/matrimonio/">Versículos sobre el matrimonio</a></li>
+          <li><a href="/temas/hijos/">Versículos sobre los hijos</a></li>
+          <li><a href="/temas/amistad/">Versículos sobre la amistad</a></li>
+          <li><a href="/temas/gratitud/">Versículos de gratitud y acción de gracias</a></li>
+          <li><a href="/temas/sabiduria/">Versículos sobre la sabiduría</a></li>
+          <li><a href="/temas/paciencia/">Versículos sobre la paciencia</a></li>
+          <li><a href="/temas/ira/">Versículos sobre la ira y el enojo</a></li>
+          <li><a href="/temas/tentacion/">Versículos sobre la tentación</a></li>
+          <li><a href="/temas/trabajo/">Versículos sobre el trabajo</a></li>
+          <li><a href="/temas/provision/">Versículos sobre la provisión de Dios</a></li>
+          <li><a href="/temas/proposito/">Versículos sobre el propósito de la vida</a></li>
+          <li><a href="/temas/oracion/">Versículos sobre la oración</a></li>
+          <li><a href="/temas/salvacion/">Versículos sobre la salvación</a></li>
+          <li><a href="/temas/animo/">Versículos de ánimo</a></li>
+          <li><a href="/temas/cumpleanos/">Versículos para un cumpleaños</a></li>
+        </ul>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

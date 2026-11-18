@@ -98,6 +98,21 @@ export function BibleApp() {
     }
   }, [saved])
 
+  // Линк от страниците по теми (/?q=…): попълва въпроса, без да го изпраща
+  // (Gemini се вика само когато потребителят натисне бутона).
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href)
+      const q = url.searchParams.get('q')?.trim()
+      if (!q) return
+      setQuestion(q.slice(0, 300))
+      url.searchParams.delete('q')
+      window.history.replaceState(null, '', url.pathname + url.search + url.hash)
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
   function toggleSave(id: string) {
     setSaved((s) => (s.includes(id) ? s.filter((x) => x !== id) : [id, ...s]))
   }

@@ -51,6 +51,9 @@ export default defineConfig(() => {
         ],
       },
       workbox: {
+        // Статичните SEO страници (/temas/…), sitemap и политиката за поверителност
+        // не са част от приложението: service worker-ът не бива да ги подменя с index.html.
+        navigateFallbackDenylist: [/^\/temas(\/|$)/, /^\/sitemap\.xml$/, /^\/privacy\.html$/],
         // Библейското аудио и пълният библейски текст (66 файла, ~11MB) не се
         // прекешират предварително — само при поискване.
         globIgnores: ['**/audio-bible/**', '**/bible/**'],

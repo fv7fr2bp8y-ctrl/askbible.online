@@ -8,7 +8,7 @@
 // Стартирай:  node scripts/gen-bible-es.mjs
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs'
 
-const ES = readFileSync('/tmp/es.usfx.xml', 'utf8')
+const ES = readFileSync(process.env.ES_USFX || '/tmp/es.usfx.xml', 'utf8')
 const BIBLE_DIR = new URL('../public/bible/', import.meta.url)
 
 // OSIS код → USFX код (ES файл) + испанско/английско име + завет.
@@ -95,7 +95,9 @@ const esData = {} // usfx -> chapter -> verse -> text
   while ((bm = bookRe.exec(ES))) {
     const [, usfx, body] = bm
     if (!usfxSet.has(usfx)) continue
-    const tokenRe = /<c id="(\d+)"\s*\/>|<v id="([\d-]+)"\s*\/>([\s\S]*?)<ve\s*\/>/g
+    // Последният стих на всяка глава в RV1909 USFX няма <ve/>, затова стихът
+    // свършва и при следващ <c>, <v> или края на книгата.
+    const tokenRe = /<c id="(\d+)"\s*\/>|<v id="([\d-]+)"\s*\/>([\s\S]*?)(?=<ve\s*\/>|<c id=|<v id=|$)/g
     let chapter = '0'
     let tm
     const store = (esData[usfx] ??= {})
